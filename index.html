@@ -268,6 +268,55 @@
         .pricing-card.disabled .tier-features li { color: #555; border-bottom-color: #1a1a1a; }
         .pricing-card.disabled .tier-features li svg { stroke: #444; }
 
+        /* =========================================
+           MOBILE RESPONSIVENESS (MEDIA QUERIES)
+           NEU HINZUGEFÜGT - LOGIK BLEIBT UNBERÜHRT
+           ========================================= */
+        @media (max-width: 1024px) {
+            .dashboard-top { flex-direction: column; }
+            .sidebar { max-height: none; }
+            .info-section { flex-direction: column; text-align: center; gap: 30px; padding: 30px; }
+            .top-mover-content { flex-direction: column; }
+            .analysis-flex { flex-direction: column; }
+            .analysis-table-container { flex-direction: column; }
+            .pricing-grid { flex-direction: column; }
+        }
+
+        @media (max-width: 768px) {
+            main { padding: 15px; }
+            header { flex-direction: column; gap: 15px; padding: 15px; }
+            .search-wrapper { width: 100%; }
+            .search-bar { width: 100%; }
+            
+            nav { width: 100%; overflow-x: auto; padding-bottom: 10px; justify-content: flex-start; -webkit-overflow-scrolling: touch; }
+            nav ul { width: max-content; }
+            .lang-wrapper { flex-direction: row; align-items: center; gap: 10px; margin-left: auto; }
+            
+            #fx-banner { flex-direction: column; text-align: center; gap: 15px; }
+            .fx-rates-container { flex-direction: column; gap: 10px; }
+            
+            .asset-header { flex-direction: column; align-items: flex-start; gap: 15px; }
+            .asset-title { font-size: 1.8rem; }
+            .asset-price { font-size: 2rem; }
+            .price-container { text-align: left; width: 100%; }
+            .price-row { justify-content: flex-start; }
+            
+            .chart-wrapper { min-height: 280px; padding: 10px; }
+            .intervals { flex-wrap: wrap; }
+            .chart-section { padding: 20px; }
+            
+            .thumbs-container { border-left: none; border-top: 1px solid #222; padding-left: 0; padding-top: 20px; }
+            
+            #table-container, #premium-table-container { overflow-x: auto; }
+            table { min-width: 600px; } /* Zwingt die Tabelle zum Scrollen, statt sie zu quetschen */
+            .view-container { padding: 20px 15px; }
+            
+            .site-footer > div { flex-direction: column; text-align: center; gap: 20px; }
+            .social-buttons { justify-content: center; }
+            
+            .skyline-wrapper { display: none; } /* Nimmt auf dem Handy oft zu viel Platz weg */
+        }
+
     </style>
 </head>
 <body>
@@ -720,7 +769,6 @@
                 { name: 'MSCI World', ticker: 'URTH', apiId: 'URTH', icon: 'https://financialmodelingprep.com/image-stock/URTH.png', rawPrice: 135.40, rawCurrency: 'USD', change: '+0.3%', repScore: 39, desc_de: 'Investiert in entwickelte Industrieländer weltweit.', desc_en: 'Invests in developed industrialized countries worldwide.' },
                 { name: 'Nasdaq 100', ticker: 'QQQ', apiId: 'QQQ', icon: 'https://financialmodelingprep.com/image-stock/QQQ.png', rawPrice: 425.80, rawCurrency: 'USD', change: '+0.9%', repScore: 38, desc_de: 'Fokus auf die 100 größten Tech-Unternehmen der USA.', desc_en: 'Focus on the 100 largest tech companies in the US.' },
                 { name: 'Emerging Markets', ticker: 'VWO', apiId: 'VWO', icon: 'https://financialmodelingprep.com/image-stock/VWO.png', rawPrice: 42.15, rawCurrency: 'USD', change: '-0.2%', repScore: 25, desc_de: 'Bildet Aktien aus Schwellenländern wie China, Indien, Brasilien ab.', desc_en: 'Tracks stocks from emerging markets like China, India, Brazil.' },
-                // HIER WURDE DER PREIS FÜR DEN DAX AUF SEINEN ECHTEN STARTWERT GESETZT
                 { name: 'DAX ETF', ticker: 'EXS1.DE', apiId: '^GDAXI', icon: 'https://ui-avatars.com/api/?name=DAX&background=00ff88&color=000&rounded=true', rawPrice: 18530.09, rawCurrency: 'EUR', change: '+0.1%', repScore: 36, desc_de: 'Bildet die 40 größten deutschen Unternehmen ab.', desc_en: 'Tracks the 40 largest German companies.' }
             ]
         };
@@ -1312,8 +1360,6 @@
             else if (category === 'Aktien' || category === 'Märkte') {
                 let symbol = apiId;
                 
-                // NEU: Finnhub Free API liefert keine guten DAX Daten, oft nur einen komplett anderen US-ETF namens DAX.
-                // Deshalb fangen wir den DAX hier ab und generieren absichtlich den perfekt passenden Verlauf!
                 if (symbol === '^GDAXI' || symbol === 'EXS1.DE') {
                     let bPrice = currentRawPrice;
                     if(!bPrice || bPrice === 0) bPrice = 18530.09;
@@ -1622,7 +1668,6 @@
             } else {
                 if(apiWarning) apiWarning.style.display = 'none'; 
                 
-                // NEU: WENN WIR ECHTE DATEN HABEN, SYNCEN WIR DEN GROSSEN PREIS AUF DEN LETZTEN CHART-PUNKT!
                 currentRawPrice = newData[newData.length - 1];
                 const priceElement = document.getElementById('current-asset-price');
                 if (priceElement) {
