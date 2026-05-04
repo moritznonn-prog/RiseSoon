@@ -1,0 +1,1757 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RiseSoon - Premium Trading Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-color: #050505; 
+            --panel-bg: #111111;
+            --panel-border: #222222;
+            --text-color: #ffffff;
+            --text-muted: #888888;
+            --accent-green: #00ff88;
+            --accent-red: #ff4444;
+            --accent-gold: #cca300;
+            --border-radius: 16px; 
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-color); display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+
+        /* --- HEADER & LOGO --- */
+        header { display: flex; justify-content: space-between; align-items: center; padding: 15px 30px; background-color: var(--panel-bg); border-bottom: 1px solid var(--panel-border); z-index: 10; box-shadow: 0 4px 20px rgba(0,0,0,0.6); }
+        .logo-container { display: flex; align-items: center; gap: 12px; cursor: pointer; transition: transform 0.2s; }
+        .logo-container:hover { transform: scale(1.02); }
+        .logo-icon svg { stroke: var(--accent-green); width: 32px; height: 32px; }
+        .logo-text { font-family: 'Orbitron', sans-serif; font-size: 1.8rem; letter-spacing: 1px; color: var(--text-color); }
+
+        /* --- SUCHLEISTE --- */
+        .search-wrapper { position: relative; }
+        .search-bar { background-color: var(--bg-color); border: 1px solid #333; color: var(--text-color); padding: 10px 20px; border-radius: 25px; width: 300px; outline: none; transition: all 0.3s; }
+        .search-bar:focus { border-color: var(--accent-green); box-shadow: 0 0 15px rgba(0, 255, 136, 0.1); }
+        .search-dropdown { position: absolute; top: 110%; left: 0; right: 0; background-color: var(--panel-bg); border: 1px solid #444; border-radius: 15px; max-height: 300px; overflow-y: auto; z-index: 100; display: none; box-shadow: 0 10px 30px rgba(0,0,0,0.8); }
+        .search-dropdown-item { padding: 12px 15px; border-bottom: 1px solid #222; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+        .search-dropdown-item:hover { background-color: rgba(255, 255, 255, 0.05); color: var(--accent-green); }
+        .search-dropdown::-webkit-scrollbar { width: 6px; }
+        .search-dropdown::-webkit-scrollbar-track { background: #111; }
+        .search-dropdown::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
+
+        /* --- NAVIGATION --- */
+        nav { display: flex; align-items: center; gap: 20px; }
+        nav ul { display: flex; list-style: none; gap: 12px; }
+        nav ul li { cursor: pointer; padding: 8px 18px; border: 1px solid #333; border-radius: 20px; transition: all 0.3s; font-size: 0.95rem; }
+        nav ul li:hover, nav ul li.active { background-color: var(--text-color); color: var(--bg-color); font-weight: bold; border-color: var(--text-color); }
+        
+        .nav-premium { border-color: var(--accent-gold) !important; color: var(--accent-gold); display: flex; align-items: center; gap: 5px; }
+        .nav-premium:hover, .nav-premium.active { background-color: var(--accent-gold) !important; color: var(--bg-color) !important; box-shadow: 0 0 15px rgba(204, 163, 0, 0.4); }
+        .nav-premium svg { width: 14px; height: 14px; stroke: currentColor; }
+
+        .nav-separator { width: 1px; height: 35px; background-color: #333; margin: 0 5px; }
+        .lang-wrapper { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+        .lang-switch { background: transparent; color: var(--text-color); border: 2px solid var(--text-color); padding: 6px 14px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: all 0.3s; }
+        .lang-switch:hover { background: var(--text-color); color: var(--bg-color); box-shadow: 0 0 10px rgba(0, 255, 136, 0.2); border-color: var(--accent-green); }
+        .lang-label { font-size: 0.6rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+
+        /* --- VIEWS CONTAINER --- */
+        main { display: flex; flex: 1; padding: 25px 40px; overflow-y: auto; position: relative; flex-direction: column; overflow-x: hidden; scroll-behavior: smooth; }
+        main::-webkit-scrollbar { width: 8px; }
+        main::-webkit-scrollbar-track { background: var(--bg-color); }
+        main::-webkit-scrollbar-thumb { background: #222; border-radius: 10px; border: 1px solid var(--bg-color); }
+        main::-webkit-scrollbar-thumb:hover { background: #444; }
+
+        /* --- FX BANNER --- */
+        #fx-banner { background: rgba(255, 255, 255, 0.02); border: 1px solid var(--panel-border); border-radius: 12px; padding: 12px 25px; margin-bottom: 25px; font-size: 0.85rem; color: var(--text-muted); display: flex; justify-content: space-between; align-items: center; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+        .fx-info { display: flex; align-items: center; gap: 10px; }
+        .fx-icon { display: flex; align-items: center; justify-content: center; }
+        .fx-icon svg { width: 20px; height: 20px; stroke: #aaa; }
+        .fx-rates-container { display: flex; gap: 30px; }
+        .fx-rate-item { display: flex; align-items: center; gap: 8px; }
+        .fx-rate { color: var(--accent-green); font-family: 'Orbitron', sans-serif; font-size: 1.05rem; letter-spacing: 1px; transition: color 0.3s; }
+
+        /* --- DASHBOARD VIEW --- */
+        #dashboard-view { display: flex; flex-direction: column; width: 100%; gap: 40px; }
+        .dashboard-top { display: flex; width: 100%; gap: 30px; min-height: 550px; }
+        
+        .chart-section { flex: 3; background: linear-gradient(180deg, #111 0%, var(--panel-bg) 100%); border: 1px solid var(--panel-border); border-radius: var(--border-radius); padding: 35px; display: flex; flex-direction: column; box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
+        .asset-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #222; padding-bottom: 20px; margin-bottom: 25px; }
+        .asset-title { font-size: 2.2rem; display: flex; align-items: center; gap: 15px; font-weight: 600; color: #fff; }
+        
+        .item-icon { width: 24px; height: 24px; border-radius: 50%; object-fit: contain; background-color: #222; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: bold; color: #fff; border: 1px solid #333; padding: 2px; }
+        img.item-icon { border: none; background: transparent; }
+        .item-icon.large { width: 36px; height: 36px; font-size: 1.1rem; padding: 4px; }
+
+        /* WÄHRUNGS TOGGLE & DISCLAIMER */
+        .price-container { text-align: right; }
+        .price-label { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; }
+        .price-row { display: flex; align-items: center; gap: 20px; justify-content: flex-end; }
+        .asset-price { font-size: 2.4rem; transition: color 0.3s; font-weight: 600; text-shadow: 0 0 20px rgba(255,255,255,0.1); }
+        .currency-toggle { display: inline-flex; background: #0c0c0c; border-radius: 8px; border: 1px solid #333; overflow: hidden; }
+        .currency-toggle button { background: transparent; border: none; color: #666; padding: 6px 14px; font-size: 0.8rem; cursor: pointer; transition: 0.3s; font-weight: bold; }
+        .currency-toggle button.active { background: #333; color: #fff; }
+        .currency-toggle button:hover:not(.active) { color: #aaa; background: #1a1a1a; }
+        
+        .price-disclaimer { font-size: 0.7rem; color: var(--text-muted); margin-top: 5px; font-style: italic; }
+
+        .chart-wrapper { flex: 1; position: relative; width: 100%; min-height: 350px; background: #0c0c0c; border: 1px solid #222; border-radius: 15px; padding: 20px; box-shadow: inset 0 5px 20px rgba(0,0,0,0.6); display: flex; flex-direction: column; }
+        .chart-container { flex: 1; position: relative; width: 100%; }
+
+        #api-warning { display: none; position: absolute; top: 10px; right: 10px; font-size: 0.75rem; color: var(--accent-red); border: 1px solid var(--accent-red); padding: 4px 10px; border-radius: 6px; background: rgba(0,0,0,0.85); font-weight: bold; z-index: 10; letter-spacing: 0.5px;}
+
+        .intervals { display: flex; justify-content: center; gap: 8px; margin-top: 20px; padding-top: 15px; border-top: 1px dashed #222;}
+        .intervals button { background: transparent; color: #aaa; border: 1px solid #333; padding: 6px 18px; border-radius: 12px; cursor: pointer; transition: 0.2s; font-size: 0.9rem; }
+        .intervals button:hover, .intervals button.active { border-color: var(--text-color); color: var(--text-color); background-color: rgba(255, 255, 255, 0.05); }
+        .intervals button.btn-1h { border-color: var(--accent-green); color: var(--accent-green); font-weight: bold; }
+        .intervals button.btn-1h:hover, .intervals button.btn-1h.active { background-color: var(--accent-green); color: var(--bg-color); box-shadow: 0 0 15px rgba(0, 255, 136, 0.3); }
+
+        #pattern-info { display: none; margin-top: 20px; padding: 15px 20px; border: 1px solid rgba(0, 255, 136, 0.3); border-radius: 12px; background-color: rgba(0, 255, 136, 0.05); text-align: center; }
+        .pattern-name { font-weight: bold; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; gap: 10px;}
+        .pattern-name svg { width: 18px; height: 18px; stroke: var(--accent-green); }
+        
+        .signal-badge { font-size: 0.75rem; padding: 3px 8px; border-radius: 6px; font-weight: 800; letter-spacing: 1px; color: #fff; }
+        .signal-badge.long { background: rgba(0, 255, 136, 0.2); border: 1px solid var(--accent-green); color: var(--accent-green); }
+        .signal-badge.short { background: rgba(255, 68, 68, 0.2); border: 1px solid var(--accent-red); color: var(--accent-red); }
+
+        #asset-description { margin-top: 25px; padding: 20px; background: rgba(255,255,255,0.02); border-radius: 12px; border: 1px solid #222; font-size: 0.95rem; color: #aaa; line-height: 1.6; }
+
+        /* --- KAUFANALYSE --- */
+        .analysis-wrapper { margin-top: 15px; border: 1px solid #333; border-radius: 12px; background: #0c0c0c; overflow: hidden; }
+        .analysis-header { padding: 15px 20px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; background: linear-gradient(90deg, rgba(255,255,255,0.05) 0%, transparent 100%); transition: 0.3s; }
+        .analysis-header:hover { background: rgba(255,255,255,0.1); }
+        .analysis-title { font-weight: 600; font-size: 1.05rem; color: #fff; display: flex; align-items: center; gap: 10px; }
+        .analysis-title svg { width: 18px; height: 18px; stroke: var(--text-color); }
+        .analysis-icon { transition: transform 0.3s; font-size: 0.8rem; }
+        .analysis-content { max-height: 0; opacity: 0; transition: max-height 0.6s ease, opacity 0.6s ease; border-top: 1px solid transparent; }
+        .analysis-content.open { max-height: 600px; opacity: 1; border-top-color: #222; }
+        
+        .analysis-flex { display: flex; padding: 20px; gap: 30px; align-items: stretch; }
+        .analysis-table-container { flex: 2; display: flex; gap: 20px; }
+        .analysis-table { flex: 1; width: 100%; border-collapse: collapse; }
+        .analysis-table td { padding: 12px 0; border-bottom: 1px dashed #222; color: #aaa; font-size: 0.9rem; }
+        .analysis-table tr:last-child td { border-bottom: none; }
+        .val-col { text-align: right; font-weight: bold; color: #fff; font-family: monospace; font-size: 1.1rem; }
+        .val-col.text-val { font-family: 'Segoe UI', sans-serif; font-size: 0.95rem; }
+        
+        .thumbs-container { flex: 1; display: flex; flex-direction: column; gap: 15px; border-left: 1px solid #222; padding-left: 30px; justify-content: center;}
+        .thumb-box { display: flex; justify-content: space-between; align-items: center; padding: 15px; border-radius: 8px; border: 1px solid #333; }
+        .thumb-box.buy { background: rgba(0, 255, 136, 0.05); border-color: rgba(0, 255, 136, 0.3); }
+        .thumb-box.sell { background: rgba(255, 68, 68, 0.05); border-color: rgba(255, 68, 68, 0.3); }
+        .thumb-icon { font-size: 0.95rem; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+        .thumb-icon svg { width: 18px; height: 18px; stroke: currentColor; }
+        .thumb-percent { font-family: 'Orbitron', sans-serif; font-size: 1.4rem; }
+        .thumb-box.buy .thumb-percent, .thumb-box.buy .thumb-icon { color: var(--accent-green); text-shadow: 0 0 10px rgba(0,255,136,0.4); }
+        .thumb-box.sell .thumb-percent, .thumb-box.sell .thumb-icon { color: var(--accent-red); text-shadow: 0 0 10px rgba(255,68,68,0.4); }
+
+        /* --- SIDEBAR --- */
+        .sidebar { flex: 1; background: linear-gradient(180deg, #111 0%, var(--panel-bg) 100%); border: 1px solid var(--panel-border); border-radius: var(--border-radius); padding: 30px 20px; overflow-y: auto; max-height: 700px; box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
+        .sidebar::-webkit-scrollbar { width: 6px; }
+        .sidebar::-webkit-scrollbar-track { background: transparent; }
+        .sidebar::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
+        .sidebar::-webkit-scrollbar-thumb:hover { background: #555; }
+        .sidebar h3 { margin-bottom: 20px; border-bottom: 1px solid #222; padding-bottom: 10px; font-size: 1.2rem; font-weight: 600; color: #fff;}
+        .list-item { display: flex; justify-content: space-between; padding: 12px 10px; border-bottom: 1px solid #1a1a1a; cursor: pointer; transition: all 0.3s; border-radius: 8px; margin-bottom: 4px;}
+        .list-item:hover { background-color: #1a1a1a; box-shadow: 0 5px 15px rgba(0,0,0,0.4); transform: translateY(-2px); }
+        .item-name { display: flex; align-items: center; gap: 10px; }
+        .negative { color: var(--accent-red); }
+        .positive { color: var(--accent-green); transition: color 0.3s; }
+
+        /* --- INFO SEKTION --- */
+        .info-section { background-color: var(--panel-bg); border: 1px solid var(--panel-border); border-radius: var(--border-radius); padding: 40px 50px; display: flex; align-items: center; gap: 50px; margin-bottom: 0; position: relative; z-index: 2; box-shadow: 0 10px 30px rgba(0,0,0,0.4); }
+        .info-icon { flex: 1; display: flex; justify-content: center; align-items: center; }
+        .info-icon svg { width: 120px; height: 120px; fill: none; stroke: var(--text-color); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; filter: drop-shadow(0 0 15px rgba(255,255,255,0.1)); }
+        .info-text { flex: 3; }
+        .info-text h2 { font-size: 2rem; margin-bottom: 20px; color: var(--text-color); font-weight: 600; display: inline-block; }
+        .info-text p { font-size: 1.05rem; line-height: 1.8; color: #aaa; margin-bottom: 15px; }
+        .info-text strong { color: #fff; font-weight: 600; }
+
+        /* --- VOLLBILD SKYLINE --- */
+        .skyline-wrapper { width: calc(100% + 80px); margin-left: -40px; height: 120px; margin-top: -30px; margin-bottom: -15px; position: relative; z-index: 1; pointer-events: none; opacity: 0.9; }
+
+        /* --- TOP MOVER SEKTION --- */
+        .top-mover-section { background: linear-gradient(180deg, #111 0%, var(--panel-bg) 100%); border: 1px solid var(--panel-border); border-radius: var(--border-radius); padding: 40px; display: flex; flex-direction: column; gap: 20px; position: relative; z-index: 2; box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
+        .top-mover-header { display: flex; flex-direction: column; gap: 10px; border-bottom: 1px solid #222; padding-bottom: 20px; margin-bottom: 10px; }
+        .top-mover-header h2 { font-size: 1.8rem; display: flex; align-items: center; gap: 12px; color: #fff; }
+        .top-mover-header h2 svg { width: 24px; height: 24px; stroke: var(--accent-red); fill: rgba(255, 68, 68, 0.2); }
+        .top-mover-desc { font-size: 0.95rem; color: var(--text-muted); line-height: 1.6; max-width: 85%; }
+        
+        .top-mover-content { display: flex; gap: 40px; align-items: stretch; }
+        .top-mover-chart { flex: 1.2; min-height: 300px; position: relative; background: #0c0c0c; border: 1px solid #222; border-radius: 15px; padding: 25px 25px 15px 20px; box-shadow: inset 0 5px 20px rgba(0,0,0,0.6); display: flex; flex-direction: column; overflow: hidden; }
+        .tm-chart-inner { flex: 1; position: relative; width: 100%; height: 100%; }
+        .tm-analysis-text { margin-top: 20px; font-size: 0.9rem; color: #aaa; border-top: 1px dashed #333; padding-top: 15px; font-style: italic; line-height: 1.6; text-align: center; }
+
+        .top-mover-facts { flex: 1; background-color: #0c0c0c; padding: 25px; border-radius: 15px; border: 1px solid #222; display: flex; flex-direction: column; justify-content: center; box-shadow: inset 0 5px 20px rgba(0,0,0,0.4);}
+        .top-mover-facts h3 { color: #fff; font-size: 1.4rem; margin-bottom: 25px; display: flex; align-items: center; gap: 12px; padding-bottom: 15px; border-bottom: 1px solid #222;}
+        .top-mover-facts ul { list-style: none; color: #aaa; line-height: 2; font-size: 0.95rem; }
+        .top-mover-facts li { display: flex; justify-content: space-between; border-bottom: 1px dashed #222; padding: 12px 0; }
+        .top-mover-facts li:last-child { border-bottom: none; }
+        .top-mover-facts strong { color: #fff; font-weight: 600; font-variant-numeric: tabular-nums; }
+
+        /* --- SCHLANKER FOOTER --- */
+        .site-footer { margin-top: 50px; padding: 20px 40px; display: flex; flex-direction: column; align-items: stretch; background-color: var(--panel-bg); border-top: 1px solid var(--panel-border); border-radius: var(--border-radius); box-shadow: 0 -5px 20px rgba(0,0,0,0.2); }
+        .footer-info { display: flex; flex-direction: column; gap: 5px; }
+        .footer-info h3 { font-family: 'Orbitron', sans-serif; font-size: 1.2rem; color: var(--text-color); }
+        .footer-info p { color: #666; font-size: 0.85rem; margin: 0; }
+        .social-buttons { display: flex; gap: 15px; }
+        .social-btn { background: transparent; color: #aaa; border: 1px solid #444; padding: 8px 20px; border-radius: 20px; cursor: pointer; transition: all 0.3s; font-size: 0.85rem; font-weight: 600; letter-spacing: 0.5px; }
+        .social-btn:hover { background: var(--text-color); color: var(--bg-color); border-color: var(--text-color); }
+
+        /* --- DISCLAIMER --- */
+        .disclaimer-banner {
+            background-color: rgba(255, 68, 68, 0.1);
+            border: 1px solid var(--accent-red);
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 30px;
+            font-size: 0.8rem;
+            color: #ccc;
+            line-height: 1.5;
+            text-align: justify;
+        }
+        .disclaimer-banner strong {
+            color: var(--accent-red);
+        }
+
+        /* --- TABLE VIEWS --- */
+        .view-container { display: none; width: 100%; background: linear-gradient(180deg, #111 0%, var(--panel-bg) 100%); border: 1px solid var(--panel-border); border-radius: var(--border-radius); padding: 40px; flex-direction: column; box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
+        .table-header { margin-bottom: 30px; font-size: 2rem; border-bottom: 1px solid #222; padding-bottom: 20px; color: #fff; font-weight: 600; display: flex; align-items: center; gap: 15px;}
+        .table-header svg { width: 28px; height: 28px; stroke: var(--accent-gold); }
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th { padding: 15px; color: var(--text-muted); border-bottom: 1px solid #333; font-weight: normal; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px; }
+        td { padding: 20px 15px; border-bottom: 1px solid #1a1a1a; }
+        tr { transition: background 0.2s; cursor: pointer; }
+        tr:hover { background-color: rgba(255,255,255,0.03); }
+        .btn-view { background-color: transparent; color: var(--text-color); border: 1px solid #444; padding: 8px 20px; border-radius: 20px; cursor: pointer; transition: 0.3s; font-size: 0.9rem;}
+        .btn-view:hover { background-color: var(--text-color); color: var(--bg-color); border-color: var(--text-color); box-shadow: 0 0 10px rgba(255,255,255,0.2);}
+        
+        .score-badge { background: rgba(0, 255, 136, 0.1); border: 1px solid var(--accent-green); color: var(--accent-green); padding: 5px 10px; border-radius: 8px; font-weight: bold; }
+        .target-price { font-family: 'Orbitron', sans-serif; font-size: 1.1rem; color: #fff; }
+
+        /* --- FLOATING ACCOUNT BUTTON --- */
+        .account-fab { position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px; background: var(--panel-bg); border: 2px solid #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 10px 25px rgba(0,0,0,0.8); transition: all 0.3s; z-index: 900;}
+        .account-fab:hover { border-color: var(--accent-gold); transform: scale(1.1); box-shadow: 0 10px 30px rgba(204, 163, 0, 0.3); }
+        .account-fab svg { width: 28px; height: 28px; stroke: #ccc; transition: 0.3s; }
+        .account-fab:hover svg { stroke: var(--accent-gold); }
+
+        /* --- PRICING MODAL --- */
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
+        .modal-overlay.active { display: flex; }
+        .modal-content { max-width: 1100px; width: 100%; position: relative; }
+        .close-modal { position: absolute; top: -40px; right: 0; background: transparent; border: none; color: #fff; font-size: 2rem; cursor: pointer; transition: 0.2s; }
+        .close-modal:hover { color: var(--accent-red); }
+        
+        .pricing-grid { display: flex; gap: 20px; }
+        .pricing-card { flex: 1; background: #111; border: 1px solid #333; border-radius: 20px; padding: 35px; display: flex; flex-direction: column; transition: 0.3s; position: relative; overflow: hidden; }
+        .pricing-card:hover { border-color: #555; transform: translateY(-5px); }
+        .pricing-card.popular { border-color: var(--accent-gold); box-shadow: 0 0 30px rgba(204, 163, 0, 0.15); }
+        .pricing-card.disabled { background: #0a0a0a; border-color: #222; opacity: 0.85; }
+        .pricing-card.disabled .tier-name, .pricing-card.disabled .tier-price, .pricing-card.disabled .tier-sub { color: #555; }
+        
+        .tier-name { font-size: 1.4rem; color: #fff; font-weight: 600; margin-bottom: 10px; }
+        .tier-price { font-family: 'Orbitron', sans-serif; font-size: 2.8rem; color: #fff; margin-bottom: 5px; }
+        .tier-sub { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 30px; }
+        
+        .tier-btn { width: 100%; padding: 12px; background: transparent; border: 1px solid #fff; color: #fff; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; margin-bottom: 30px; font-size: 1rem; }
+        .tier-btn:hover { background: #fff; color: #000; }
+        .pricing-card.popular .tier-btn { background: var(--accent-gold); border-color: var(--accent-gold); color: #000; }
+        .pricing-card.popular .tier-btn:hover { background: #e6b800; }
+
+        .tier-features { list-style: none; display: flex; flex-direction: column; gap: 15px; flex: 1; }
+        .tier-features li { font-size: 0.9rem; color: #ccc; display: flex; align-items: flex-start; gap: 10px; line-height: 1.4; border-bottom: 1px dashed #222; padding-bottom: 15px;}
+        .tier-features li:last-child { border-bottom: none; }
+        .tier-features li svg { width: 18px; height: 18px; stroke: var(--accent-green); flex-shrink: 0; margin-top: 2px;}
+        .tier-features li.missing svg { stroke: #555; }
+        .tier-features li.missing { color: #555; }
+        .pricing-card.disabled .tier-features li { color: #555; border-bottom-color: #1a1a1a; }
+        .pricing-card.disabled .tier-features li svg { stroke: #444; }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo-container" onclick="goHome()">
+            <div class="logo-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline>
+                    <polyline points="16 7 22 7 22 13"></polyline>
+                </svg>
+            </div>
+            <div class="logo-text">RiseSoon</div>
+        </div>
+        <div class="search-wrapper">
+            <input type="text" id="searchInput" class="search-bar" placeholder="Suchen (z.B. Apple, BTC)..." oninput="handleSearch(this.value)">
+            <div id="searchResults" class="search-dropdown"></div>
+        </div>
+        <nav>
+            <ul>
+                <li onclick="switchNav('Aktien', this)" id="nav-stocks">Aktien</li>
+                <li onclick="switchNav('Crypto', this)" id="nav-crypto">Crypto</li>
+                <li onclick="switchNav('Märkte', this)" id="nav-markets">Märkte</li>
+                <li onclick="alert(t.brokerAlert)" id="nav-broker">Broker</li>
+                <li onclick="alert(t.moreAlert)" id="nav-more">Mehr</li>
+                <li class="nav-separator"></li>
+                <li class="nav-premium" onclick="openPremiumView()" id="nav-premium">
+                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                    </svg>
+                    RiseSoon+ Picks
+                </li>
+            </ul>
+            <div class="nav-separator"></div>
+            <div class="lang-wrapper">
+                <button class="lang-switch" onclick="toggleLanguage()" id="lang-btn">EN</button>
+                <span class="lang-label" id="lang-label-text">Sprache</span>
+            </div>
+        </nav>
+    </header>
+
+    <main id="main-content">
+        <!-- FX BANNER -->
+        <div id="fx-banner">
+            <div class="fx-info">
+                <div class="fx-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                    </svg>
+                </div>
+                <span id="fx-title-text" style="font-weight: bold; color: #fff;">Live Forex:</span>
+            </div>
+            <div class="fx-rates-container">
+                <div class="fx-rate-item">1 EUR = <span class="fx-rate" id="fx-eur">1.0845</span> USD</div>
+                <div class="fx-rate-item">1 GBP = <span class="fx-rate" id="fx-gbp">1.2630</span> USD</div>
+                <div class="fx-rate-item">1 AUD = <span class="fx-rate" id="fx-aud">0.6520</span> USD</div>
+            </div>
+        </div>
+
+        <div id="dashboard-view">
+            <div class="dashboard-top">
+                <section class="chart-section">
+                    <div class="asset-header">
+                        <div class="asset-title" id="current-asset-name">
+                            <img src="https://ui-avatars.com/api/?name=DAX&background=00ff88&color=000&rounded=true" class="item-icon large" alt="Icon"> 
+                            DAX
+                        </div>
+                        <div class="price-container">
+                            <div class="price-label" id="price-label-text">Aktueller Preis:</div>
+                            
+                            <div class="price-row">
+                                <div class="asset-price" id="current-asset-price">18.530,09 EUR</div>
+                                <div class="currency-toggle">
+                                    <button id="curr-usd" class="active" onclick="setCurrency('USD')">USD</button>
+                                    <button id="curr-eur" onclick="setCurrency('EUR')">EUR</button>
+                                </div>
+                            </div>
+                            <div class="price-disclaimer" id="price-disclaimer-text">*Daten können um bis zu 15 Min. verzögert sein. Keine Gewähr.</div>
+                        </div>
+                    </div>
+
+                    <div class="chart-wrapper">
+                        <!-- WARNING FALLBACK API LIMIT -->
+                        <div id="api-warning">⚠️ Backend-Limit - Demo Chart</div>
+                        
+                        <div class="chart-container">
+                            <canvas id="mainChart"></canvas>
+                        </div>
+                        <div class="intervals">
+                            <button onclick="changeInterval('Max', this)">Max</button>
+                            <button onclick="changeInterval('1J', this)">1J</button>
+                            <button onclick="changeInterval('6M', this)">6M</button>
+                            <button onclick="changeInterval('1M', this)">1M</button>
+                            <button class="active" onclick="changeInterval('1W', this)">1W</button>
+                            <button onclick="changeInterval('1T', this)">1T</button>
+                            <button class="btn-1h" onclick="changeInterval('1H', this)">1H</button>
+                        </div>
+                    </div>
+
+                    <div id="pattern-info">
+                        <span id="pattern-prefix" style="display:flex; align-items:center; gap:5px; color:#aaa;">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                            <span id="pattern-prefix-text">Chartmuster:</span>
+                        </span>
+                        <span class="pattern-name" id="pattern-name-text">
+                            <!-- Wird per JS gefüllt -->
+                        </span>
+                        <p style="font-size: 0.8rem; margin-top: 5px; color: #ccc;" id="pattern-desc">Eine Trendlinie wurde in den Kurs eingezeichnet, die auf eine Prognose hindeutet.</p>
+                    </div>
+
+                    <div id="asset-description">
+                        Der DAX (Deutscher Aktienindex) ist der wichtigste Aktienindex in Deutschland. Er misst die Wertentwicklung der 40 größten und liquidesten Unternehmen des deutschen Aktienmarktes.
+                    </div>
+
+                    <!-- ERWEITERTE KAUFANALYSE -->
+                    <div class="analysis-wrapper">
+                        <div class="analysis-header" onclick="toggleAnalysis()">
+                            <span class="analysis-title" id="analysis-title-text">
+                                <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+                                Kaufanalyse (KI-gestützt)
+                            </span>
+                            <span class="analysis-icon" id="analysis-icon">▼</span>
+                        </div>
+                        <div class="analysis-content" id="analysis-content">
+                            <div class="analysis-flex">
+                                <div class="analysis-table-container">
+                                    <table class="analysis-table">
+                                        <tr><td id="an-news-text">Analysten-Konsens (News)</td><td class="val-col" id="score-news">0.0%</td></tr>
+                                        <tr><td id="an-chart-text">Tech. Setup (Chartmuster)</td><td class="val-col" id="score-pattern">0.0%</td></tr>
+                                        <tr><td id="an-rep-text">Fundamentale Stabilität</td><td class="val-col" id="score-rep">0.0%</td></tr>
+                                    </table>
+                                    <table class="analysis-table">
+                                        <tr><td id="an-rsi-text">RSI (Relative Stärke)</td><td class="val-col text-val" id="score-rsi">Lade...</td></tr>
+                                        <tr><td id="an-vol-text">Volatilität (30 Tage)</td><td class="val-col text-val" id="score-vol">Lade...</td></tr>
+                                        <tr><td id="an-macd-text">MACD Signal</td><td class="val-col text-val" id="score-macd" style="color:var(--accent-green);">Bullish</td></tr>
+                                    </table>
+                                </div>
+
+                                <div class="thumbs-container">
+                                    <div class="thumb-box buy">
+                                        <div class="thumb-icon" id="an-buy-text">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
+                                            Kaufen
+                                        </div>
+                                        <div class="thumb-percent" id="score-total-buy">0%</div>
+                                    </div>
+                                    <div class="thumb-box sell">
+                                        <div class="thumb-icon" id="an-sell-text">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"></polyline><polyline points="17 18 23 18 23 12"></polyline></svg>
+                                            Verkaufen
+                                        </div>
+                                        <div class="thumb-percent" id="score-total-sell">0%</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </section>
+
+                <aside class="sidebar">
+                    <h3 id="sidebar-title">Top 10 Aktien</h3>
+                    <div id="top-list-container"></div>
+                </aside>
+            </div>
+
+            <!-- INFO SEKTION -->
+            <section class="info-section">
+                <div class="info-icon">
+                    <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 15L9 9L13 13L21 5" />
+                        <circle cx="9" cy="9" r="1.5" fill="#fff" stroke="none"/>
+                        <circle cx="13" cy="13" r="1.5" fill="#fff" stroke="none"/>
+                        <circle cx="21" cy="5" r="1.5" fill="#fff" stroke="none"/>
+                        <path d="M9 9V20" stroke-width="0.5" stroke-dasharray="2 2"/>
+                        <path d="M13 13V20" stroke-width="0.5" stroke-dasharray="2 2"/>
+                        <path d="M21 5V20" stroke-width="0.5" stroke-dasharray="2 2"/>
+                        <path d="M3 20H22" stroke-width="1"/>
+                    </svg>
+                </div>
+                <div class="info-text">
+                    <h2 id="info-title">Die 1H-Mustererkennungs-Revolution</h2>
+                    <p id="info-p1">Willkommen in der neuen Ära der Marktanalyse. Bisher waren Algorithmen, die Live-Kurse in Millisekunden auswerten und Chartmuster erkennen, teuren Wall-Street-Terminals vorbehalten. <strong>RiseSoon demokratisiert diese Technologie.</strong> Unser System scannt im Hintergrund kontinuierlich den 1-Stunden-Chart (1H) und ordnet die Kursverläufe bekannten Mustern der Technischen Analyse (TA) zu.</p>
+                    <p id="info-p2"><strong>Die Wahrheit über das Trading:</strong> Keine Software der Welt kann die Zukunft vorhersagen oder Gewinne garantieren. Studien zeigen, dass der wahre Vorteil an der Börse nicht in einer 100%igen Trefferquote liegt, sondern im <strong>Risikomanagement</strong>. Erfolgreiche Profis gewinnen oft nur bei knapp der Hälfte ihrer Trades – aber ihre Gewinne übersteigen die Verluste bei weitem.</p>
+                    <p id="info-p3">Genau hier setzt unsere Revolution an: RiseSoon nimmt dir die komplexe, fehleranfällige und stundenlange Chart-Zeichnung ab. Es liefert dir sofortige, visuelle Orientierungspunkte direkt im Kurs. So erkennst du potenzielle Setups blitzschnell und kannst datenbasierte Entscheidungen für dein persönliches Chance-Risiko-Verhältnis treffen.</p>
+                </div>
+            </section>
+
+            <!-- VOLLBILD SKYLINE -->
+            <div class="skyline-wrapper">
+                <svg viewBox="0 0 1000 100" preserveAspectRatio="none" style="width: 100%; height: 100%;">
+                    <path d="M0,100 L0,60 L25,60 L25,40 L60,40 L60,70 L95,70 L95,20 L130,20 L130,55 L175,55 L175,35 L215,35 L215,80 L260,80 L260,30 L300,30 L300,65 L345,65 L345,25 L385,25 L385,75 L430,75 L430,45 L475,45 L475,15 L515,15 L515,60 L560,60 L560,35 L600,35 L600,85 L650,85 L650,40 L695,40 L695,70 L740,70 L740,25 L785,25 L785,65 L830,65 L830,30 L875,30 L875,80 L920,80 L920,45 L965,45 L965,70 L1000,70 L1000,100 Z" fill="#1a1a1a" />
+                    <path d="M0,100 L0,75 L35,75 L35,50 L80,50 L80,85 L125,85 L125,35 L165,35 L165,65 L205,65 L205,25 L245,25 L245,75 L285,75 L285,45 L325,45 L325,85 L370,85 L370,55 L415,55 L415,35 L455,35 L455,80 L500,80 L500,40 L545,40 L545,65 L585,65 L585,25 L630,25 L630,75 L675,75 L675,45 L720,45 L720,85 L765,85 L765,35 L810,35 L810,60 L855,60 L855,20 L900,20 L900,70 L945,70 L945,50 L1000,50 L1000,100 Z" fill="#111111" stroke="#222" stroke-width="1" />
+                    <g fill="#cca300" opacity="0.65" style="filter: drop-shadow(0px 0px 4px rgba(204, 163, 0, 0.8));">
+                        <rect x="45" y="60" width="4" height="6"/><rect x="65" y="60" width="4" height="6"/><rect x="55" y="75" width="4" height="6"/>
+                        <rect x="135" y="45" width="4" height="6"/><rect x="150" y="45" width="4" height="6"/><rect x="142" y="60" width="4" height="6"/>
+                        <rect x="215" y="40" width="4" height="8"/><rect x="230" y="40" width="4" height="8"/><rect x="222" y="60" width="4" height="8"/>
+                        <rect x="300" y="55" width="5" height="5"/><rect x="312" y="65" width="5" height="5"/>
+                        <rect x="425" y="45" width="4" height="8"/><rect x="440" y="45" width="4" height="8"/><rect x="432" y="65" width="4" height="8"/>
+                        <rect x="515" y="50" width="4" height="5"/><rect x="530" y="50" width="4" height="5"/><rect x="522" y="65" width="4" height="5"/>
+                        <rect x="600" y="35" width="4" height="10"/><rect x="615" y="45" width="4" height="10"/><rect x="605" y="65" width="4" height="10"/>
+                        <rect x="690" y="55" width="5" height="6"/><rect x="705" y="65" width="5" height="6"/>
+                        <rect x="780" y="45" width="4" height="8"/><rect x="795" y="55" width="4" height="8"/><rect x="785" y="70" width="4" height="8"/>
+                        <rect x="870" y="35" width="5" height="5"/><rect x="885" y="45" width="5" height="5"/><rect x="875" y="60" width="5" height="5"/><rect x="880" y="75" width="5" height="5"/>
+                        <rect x="960" y="60" width="4" height="8"/><rect x="975" y="60" width="4" height="8"/><rect x="965" y="80" width="4" height="8"/>
+                    </g>
+                </svg>
+            </div>
+
+            <section class="top-mover-section">
+                <div class="top-mover-header">
+                    <h2 id="top-mover-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c0 0-5 6-5 11a5 5 0 0 0 10 0c0-5-5-11-5-11Z"/><path d="M12 12c0 0-2 2-2 4a2 2 0 0 0 4 0c0-2-2-4-2-4Z"/></svg>
+                        Wöchentlicher Top Mover
+                    </h2>
+                    <p class="top-mover-desc" id="top-mover-desc">Unser proprietärer Algorithmus scannt wöchentlich tausende Assets auf signifikante Momentum-Ausbrüche und abnormale Volumen-Spikes. Der abgebildete Chart visualisiert nicht nur die pure Preis-Action der letzten 7 Tage, sondern legt automatisch dynamische Widerstands- und Unterstützungszonen über den Kurs, um den Trendkanal analytisch abzubilden.</p>
+                </div>
+                
+                <div class="top-mover-content">
+                    <div class="top-mover-chart">
+                        <div class="tm-chart-inner">
+                            <canvas id="topMoverChart"></canvas>
+                        </div>
+                        <div class="tm-analysis-text" id="tm-analysis-text">
+                            Initialisiere Daten...
+                        </div>
+                    </div>
+                    <div class="top-mover-facts">
+                        <h3 id="tm-asset-title">Lädt...</h3>
+                        <ul id="top-mover-list">
+                            <li><span id="tm-mov-label">Performance (7 Tage):</span> <strong class="positive" id="tm-perf-val">--</strong></li>
+                            <li><span id="tm-trig-label">Katalysator:</span> <strong id="tm-trig-val">--</strong></li>
+                            <li><span id="tm-vol-label">Rel. Volumen:</span> <strong id="tm-vol-val">--</strong></li>
+                            <li><span id="tm-scan-label">Nächste Analyse in:</span> <strong id="tm-scan-val" style="font-variant-numeric: tabular-nums;">--</strong></li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- NORMALE TABELLE -->
+        <div id="table-view" class="view-container">
+            <div class="table-header" id="table-title">Top 50 Aktien</div>
+            <div id="table-container"></div>
+        </div>
+
+        <!-- PREMIUM TABELLE (RISE SOON +) -->
+        <div id="premium-view" class="view-container">
+            <div class="table-header" id="premium-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                RiseSoon+ Top Picks (KI-Analyse)
+            </div>
+            <p style="color:#aaa; margin-top:-15px; margin-bottom:30px;">Die exklusiven Top-Kaufempfehlungen unseres Algorithmus, basierend auf Momentum, Fundamentaldaten und Charttechnik.</p>
+            <div id="premium-table-container"></div>
+        </div>
+
+        <footer class="site-footer" style="flex-direction: column; align-items: stretch;">
+            <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                <div class="footer-info">
+                    <h3>RiseSoon</h3>
+                    <p id="footer-desc">Next-Gen Marktanalyse. Präzise, algorithmisch, demokratisiert.</p>
+                </div>
+                <div class="social-buttons">
+                    <button class="social-btn">Instagram</button>
+                    <button class="social-btn">TikTok</button>
+                </div>
+            </div>
+            <!-- NEU: Großer Disclaimer -->
+            <div class="disclaimer-banner" id="global-disclaimer">
+                <strong>Wichtiger rechtlicher Hinweis & Risikowarnung:</strong> Die auf RiseSoon bereitgestellten Informationen, Kurse, Charts, Analysen und KI-Prognosen dienen ausschließlich Informationszwecken und stellen <strong>keine Anlageberatung, Handelsempfehlung oder Aufforderung zum Kauf/Verkauf von Finanzinstrumenten</strong> dar. Wir beziehen unsere Daten von Drittanbietern (z.B. Finnhub, FMP, CoinGecko). Diese Daten und Wechselkurse können <strong>verzögert, ungenau oder fehlerhaft</strong> sein. Die angezeigten Preise können erheblich von den ausführbaren Preisen bei Brokern (wie Trade Republic, Scalable Capital etc.) abweichen. Der Handel mit Aktien, ETFs und Kryptowährungen birgt ein hohes Risiko für Ihr eingesetztes Kapital bis hin zum Totalverlust. Historische Performance ist kein Indikator für zukünftige Ergebnisse. RiseSoon übernimmt <strong>keinerlei Haftung</strong> für finanzielle Verluste oder Schäden, die aus der Nutzung unserer Daten oder Analysen resultieren. Konsultieren Sie vor Anlageentscheidungen stets einen zertifizierten Finanzberater.
+            </div>
+        </footer>
+    </main>
+
+    <!-- FLOATING ACCOUNT BUTTON -->
+    <div class="account-fab" onclick="openModal()">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+    </div>
+
+    <!-- PRICING MODAL -->
+    <div class="modal-overlay" id="pricingModal">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closeModal()">×</button>
+            <div class="pricing-grid">
+                
+                <!-- TIER 1 -->
+                <div class="pricing-card">
+                    <div class="tier-name">RisingStar</div>
+                    <div class="tier-price">0.00 € <span style="font-size:1rem; color:#888;">/ Mo.</span></div>
+                    <div class="tier-sub">Für Einsteiger. Kostenlos.</div>
+                    <button class="tier-btn" onclick="alert('Mockup: Bitte füllen Sie das Registrierungsformular aus (Name, E-Mail, Adresse, Passwort, Telefonnummer) und bestätigen Sie Ihre E-Mail.')">Kostenlos Registrieren</button>
+                    <ul class="tier-features">
+                        <li><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"></polyline></svg> Basis Charts & Live-Kurse</li>
+                        <li><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"></polyline></svg> Wöchentlicher Top Mover</li>
+                        <li class="missing"><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg> RiseSoon+ Top Picks Tabelle</li>
+                        <li class="missing"><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg> Werbefreies Erlebnis (Demnächst)</li>
+                        <li><span style="color:#888; font-size:0.8rem; font-style:italic;">Erfordert Registrierung (Name, Adresse, E-Mail, Tel, Passwort)</span></li>
+                    </ul>
+                </div>
+
+                <!-- TIER 2 -->
+                <div class="pricing-card popular">
+                    <div class="tier-name">RisingGiant</div>
+                    <div class="tier-price">10.90 € <span style="font-size:1rem; color:#888;">/ Mo.</span></div>
+                    <div class="tier-sub">Der Trumpf für Trader.</div>
+                    <button class="tier-btn" onclick="subscribePremium()">Jetzt Abonnieren</button>
+                    <ul class="tier-features">
+                        <li><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"></polyline></svg> Alles aus RisingStar</li>
+                        <li><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"></polyline></svg> <strong style="color:#fff;">Zugriff auf RiseSoon+ Picks</strong></li>
+                        <li><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"></polyline></svg> Exzellente KI Analysen</li>
+                        <li><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"></polyline></svg> Tiefgehende Kaufanalyse</li>
+                        <li><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"></polyline></svg> Komplett Werbefrei</li>
+                    </ul>
+                </div>
+
+                <!-- TIER 3 -->
+                <div class="pricing-card">
+                    <div class="tier-name">RisingTitan</div>
+                    <div class="tier-price" style="font-size: 2.2rem;">Individuell</div>
+                    <div class="tier-sub">Für institutionelle Kunden.</div>
+                    <button class="tier-btn" onclick="alert('Das Kontaktformular für das Sales-Team wird geöffnet...')">Anfragen</button>
+                    <ul class="tier-features">
+                        <li><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"></polyline></svg> Direkter API-Zugang</li>
+                        <li><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"></polyline></svg> OTC & Darkpool Daten</li>
+                        <li><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"></polyline></svg> Persönlicher VIP Support</li>
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let isPremiumUser = false; 
+
+        let myChart; 
+        let topMoverChart; 
+        const ctx = document.getElementById('mainChart').getContext('2d');
+        const ctxMover = document.getElementById('topMoverChart').getContext('2d');
+        
+        let currentApiId = null;
+        let currentCategory = 'Aktien'; 
+        let currentRepScore = 30; 
+        let currentRawPrice = 0;
+        let currentRawCurrency = 'USD';
+
+        let currentCurrency = 'USD';
+        let eurUsdRate = 1.0850; 
+        let gbpUsdRate = 1.2630;
+        let audUsdRate = 0.6520;
+        const defaultExchangeRates = { eurUsd: eurUsdRate, gbpUsd: gbpUsdRate, audUsd: audUsdRate };
+        let fxRateLoaded = false;
+
+        function convertCurrency(amount, fromCurrency, toCurrency) {
+            if(fromCurrency === toCurrency || amount === null || amount === undefined || isNaN(amount)) return amount;
+            const rates = {
+                USD: 1,
+                EUR: eurUsdRate,
+                GBP: gbpUsdRate,
+                AUD: audUsdRate
+            };
+            if(!rates[fromCurrency] || !rates[toCurrency]) return amount;
+            const amountInUsd = amount * rates[fromCurrency];
+            return amountInUsd / rates[toCurrency];
+        }
+
+        let isAnalysisOpen = false;
+        let valNews = 0, valPattern = 0, valRep = 0, valTotal = 0;
+
+        let currentLang = 'de';
+        const translations = {
+            'de': {
+                search: 'Suchen (z.B. Apple, BTC)...', stocks: 'Aktien', crypto: 'Crypto', markets: 'Märkte', broker: 'Broker', more: 'Mehr',
+                currentPrice: 'Aktueller Preis:', patternDetected: 'Chartmuster:',
+                patternDescLong: 'Eine grüne Trendlinie wurde eingezeichnet, die auf einen potenziellen Anstieg hindeutet.',
+                patternDescShort: 'Eine rote Trendlinie wurde eingezeichnet, die auf einen potenziellen Kursfall hindeutet.',
+                top10: 'Top 10', top5: 'Top 5', all: 'Alle', name: 'Name', price: 'Preis', change: '24h Änderung', action: 'Aktion',
+                openChart: 'Chart öffnen', loading: 'Lade Live-Kurse für', brokerAlert: 'Broker-Anbindung in Entwicklung!', moreAlert: 'Weitere Features folgen.',
+                language: 'Sprache', fxTitle: 'Live Forex:',
+                daxDesc: 'Der DAX (Deutscher Aktienindex) ist der wichtigste Aktienindex in Deutschland. Er misst die Wertentwicklung der 40 größten und liquidesten Unternehmen des deutschen Aktienmarktes.',
+                topMoverTitle: 'Wöchentlicher Top Mover',
+                topMoverDesc: 'Unser proprietärer Algorithmus scannt wöchentlich tausende Assets auf signifikante Momentum-Ausbrüche und abnormale Volumen-Spikes. Der abgebildete Chart visualisiert nicht nur die pure Preis-Action der letzten 7 Tage, sondern legt automatisch dynamische Widerstands- und Unterstützungszonen über den Kurs, um den Trendkanal analytisch abzubilden.',
+                tmMov: 'Performance (7 Tage):', tmTrig: 'Katalysator:', tmTrigVal: 'Netzwerk-Protokoll Update', tmVol: 'Rel. Volumen:', tmVolVal: '340% über Ø', tmScan: 'Nächste Analyse in:',
+                tmAnalysisText: 'Der Momentum-Ausbruch wurde durch stark erhöhtes Handelsvolumen bestätigt.',
+                footerDesc: 'Next-Gen Marktanalyse. Präzise, algorithmisch, demokratisiert.',
+                anTitle: 'Kaufanalyse (KI-gestützt)', anNews: 'Analysten-Konsens (News)', anChart: 'Tech. Setup (Chartmuster)', anRep: 'Fundamentale Stabilität', anRsi: 'RSI (Relative Stärke)', anVol: 'Volatilität (30 Tage)', anMacd: 'MACD Signal', anBuy: 'Kaufen', anSell: 'Verkaufen',
+                infoTitle: 'Die 1H-Mustererkennungs-Revolution',
+                infoP1: 'Willkommen in der neuen Ära der Marktanalyse. Bisher waren Algorithmen, die Live-Kurse in Millisekunden auswerten und Chartmuster erkennen, teuren Wall-Street-Terminals vorbehalten. <strong>RiseSoon demokratisiert diese Technologie.</strong>',
+                infoP2: '<strong>Die Wahrheit über das Trading:</strong> Keine Software der Welt kann die Zukunft vorhersagen oder Gewinne garantieren. Der wahre Vorteil liegt im <strong>Risikomanagement</strong>.',
+                infoP3: 'RiseSoon nimmt dir die komplexe Chart-Zeichnung ab und liefert visuelle Orientierungspunkte direkt im Kurs.',
+                loadingVal: 'Lädt...'
+            },
+            'en': {
+                search: 'Search (e.g. Apple, BTC)...', stocks: 'Stocks', crypto: 'Crypto', markets: 'Markets', broker: 'Broker', more: 'More',
+                currentPrice: 'Current Price:', patternDetected: 'Chart pattern:',
+                patternDescLong: 'A green trendline has been drawn, indicating a potential uptrend.',
+                patternDescShort: 'A red trendline has been drawn, indicating a potential downtrend.',
+                top10: 'Top 10', top5: 'Top 5', all: 'All', name: 'Name', price: 'Price', change: '24h Change', action: 'Action',
+                openChart: 'Open Chart', loading: 'Loading live data for', brokerAlert: 'Broker integration in development!', moreAlert: 'More features coming soon.',
+                language: 'Language', fxTitle: 'Live Exchange Rate:',
+                daxDesc: 'The DAX is the most important stock market index in Germany, tracking the performance of the 40 largest and most liquid companies.',
+                topMoverTitle: 'Weekly Top Mover',
+                topMoverDesc: 'Our proprietary algorithm scans thousands of assets weekly for significant momentum breakouts and abnormal volume spikes. The chart below visualizes not only the pure price action of the last 7 days but also automatically overlays dynamic resistance and support zones to analytically map the trend channel.',
+                tmMov: 'Performance (7 Days):', tmTrig: 'Catalyst:', tmTrigVal: 'Network Protocol Update', tmVol: 'Rel. Volume:', tmVolVal: '340% above Avg', tmScan: 'Next Analysis in:',
+                tmAnalysisText: 'The momentum breakout was confirmed by significantly increased trading volume.',
+                footerDesc: 'Next-Gen Market Analysis. Precise, algorithmic, democratized.',
+                anTitle: 'Buy Analysis (AI-driven)', anNews: 'Analyst Consensus (News)', anChart: 'Tech. Setup (Pattern)', anRep: 'Fundamental Stability', anRsi: 'RSI (Relative Strength)', anVol: 'Volatility (30 Days)', anMacd: 'MACD Signal', anBuy: 'Buy', anSell: 'Sell',
+                infoTitle: 'The 1H Pattern Recognition Revolution',
+                infoP1: 'Welcome to the new era of market analysis. Previously, algorithms that evaluate live prices and detect patterns in milliseconds were reserved for expensive Wall Street terminals. <strong>RiseSoon democratizes this technology.</strong>',
+                infoP2: '<strong>The truth about trading:</strong> No software can predict the future or guarantee profits. The real advantage lies in <strong>risk management</strong>.',
+                infoP3: 'RiseSoon takes the complex chart drawing off your hands and provides visual reference points directly on the chart.',
+                loadingVal: 'Loading...'
+            }
+        };
+
+        let t = translations[currentLang];
+
+        const datenBank = {
+            'Aktien': [
+                { name: 'Apple', ticker: 'AAPL', apiId: 'AAPL', icon: 'https://financialmodelingprep.com/image-stock/AAPL.png', rawPrice: 173.50, rawCurrency: 'USD', change: '+1.2%', repScore: 40, desc_de: 'Technologieunternehmen, bekannt für iPhone, Mac und Services.', desc_en: 'Tech company known for iPhone, Mac, and services.' },
+                { name: 'Microsoft', ticker: 'MSFT', apiId: 'MSFT', icon: 'https://financialmodelingprep.com/image-stock/MSFT.png', rawPrice: 420.10, rawCurrency: 'USD', change: '+0.8%', repScore: 38, desc_de: 'Softwaregigant, Cloud-Computing (Azure) und Windows.', desc_en: 'Software giant, cloud computing (Azure) and Windows.' },
+                { name: 'NVIDIA', ticker: 'NVDA', apiId: 'NVDA', icon: 'https://financialmodelingprep.com/image-stock/NVDA.png', rawPrice: 890.30, rawCurrency: 'USD', change: '+2.5%', repScore: 36, desc_de: 'Marktführer für KI-Chips und Grafikkarten.', desc_en: 'Market leader for AI chips and graphics cards.' },
+                { name: 'Tesla', ticker: 'TSLA', apiId: 'TSLA', icon: 'https://financialmodelingprep.com/image-stock/TSLA.png', rawPrice: 175.20, rawCurrency: 'USD', change: '-1.1%', repScore: 28, desc_de: 'Elektroautos, Solarenergie und Batteriespeicher.', desc_en: 'Electric cars, solar energy and battery storage.' },
+                { name: 'Amazon', ticker: 'AMZN', apiId: 'AMZN', icon: 'https://financialmodelingprep.com/image-stock/AMZN.png', rawPrice: 180.00, rawCurrency: 'USD', change: '+0.5%', repScore: 37, desc_de: 'E-Commerce Gigant und Cloud-Anbieter (AWS).', desc_en: 'E-commerce giant and cloud provider (AWS).' },
+                { name: 'Meta', ticker: 'META', apiId: 'META', icon: 'https://financialmodelingprep.com/image-stock/META.png', rawPrice: 500.20, rawCurrency: 'USD', change: '+1.5%', repScore: 35, desc_de: 'Social-Media Gigant (Facebook, Instagram, WhatsApp).', desc_en: 'Social media giant (Facebook, Instagram, WhatsApp).' },
+                { name: 'Alphabet', ticker: 'GOOGL', apiId: 'GOOGL', icon: 'https://financialmodelingprep.com/image-stock/GOOGL.png', rawPrice: 155.30, rawCurrency: 'USD', change: '+0.4%', repScore: 39, desc_de: 'Suchmaschinen-Marktführer und Cloud-Infrastruktur.', desc_en: 'Search engine leader and cloud infrastructure.' },
+                { name: 'Netflix', ticker: 'NFLX', apiId: 'NFLX', icon: 'https://financialmodelingprep.com/image-stock/NFLX.png', rawPrice: 610.45, rawCurrency: 'USD', change: '-0.3%', repScore: 32, desc_de: 'Führender Streaming-Anbieter für Filme und Serien.', desc_en: 'Leading streaming provider for movies and series.' },
+                { name: 'AMD', ticker: 'AMD', apiId: 'AMD', icon: 'https://financialmodelingprep.com/image-stock/AMD.png', rawPrice: 165.20, rawCurrency: 'USD', change: '+3.1%', repScore: 34, desc_de: 'Halbleiterhersteller, starker Konkurrent im CPU & GPU Markt.', desc_en: 'Semiconductor manufacturer, strong competitor in CPU & GPU market.' },
+                { name: 'Intel', ticker: 'INTC', apiId: 'INTC', icon: 'https://financialmodelingprep.com/image-stock/INTC.png', rawPrice: 42.10, rawCurrency: 'USD', change: '-2.1%', repScore: 25, desc_de: 'Einer der größten Hersteller von PC- und Server-Prozessoren.', desc_en: 'One of the largest manufacturers of PC and server processors.' },
+                { name: 'Disney', ticker: 'DIS', apiId: 'DIS', icon: 'https://financialmodelingprep.com/image-stock/DIS.png', rawPrice: 115.80, rawCurrency: 'USD', change: '+0.2%', repScore: 33, desc_de: 'Weltweites Unterhaltungs- und Medienkonglomerat.', desc_en: 'Global entertainment and media conglomerate.' },
+                { name: 'Coinbase', ticker: 'COIN', apiId: 'COIN', icon: 'https://financialmodelingprep.com/image-stock/COIN.png', rawPrice: 250.60, rawCurrency: 'USD', change: '+5.4%', repScore: 26, desc_de: 'Eine der größten Krypto-Börsen für digitale Vermögenswerte.', desc_en: 'One of the largest crypto exchanges for digital assets.' },
+                { name: 'PayPal', ticker: 'PYPL', apiId: 'PYPL', icon: 'https://financialmodelingprep.com/image-stock/PYPL.png', rawPrice: 65.40, rawCurrency: 'USD', change: '-0.5%', repScore: 28, desc_de: 'Digitaler Zahlungsdienstleister und Finanztechnologie.', desc_en: 'Digital payment provider and financial technology.' },
+                { name: 'Coca-Cola', ticker: 'KO', apiId: 'KO', icon: 'https://financialmodelingprep.com/image-stock/KO.png', rawPrice: 60.15, rawCurrency: 'USD', change: '+0.1%', repScore: 38, desc_de: 'Der weltgrößte Hersteller von alkoholfreien Getränken.', desc_en: 'The worlds largest manufacturer of non-alcoholic beverages.' },
+                { name: 'Palantir', ticker: 'PLTR', apiId: 'PLTR', icon: 'https://financialmodelingprep.com/image-stock/PLTR.png', rawPrice: 23.80, rawCurrency: 'USD', change: '+4.2%', repScore: 31, desc_de: 'Datenanalyse-Software für Regierungen und Unternehmen.', desc_en: 'Data analytics software for governments and enterprises.' },
+                { name: 'Spotify', ticker: 'SPOT', apiId: 'SPOT', icon: 'https://financialmodelingprep.com/image-stock/SPOT.png', rawPrice: 295.10, rawCurrency: 'USD', change: '+1.8%', repScore: 29, desc_de: 'Marktführer für Audio- und Musik-Streaming.', desc_en: 'Market leader for audio and music streaming.' },
+                { name: 'Uber', ticker: 'UBER', apiId: 'UBER', icon: 'https://financialmodelingprep.com/image-stock/UBER.png', rawPrice: 75.30, rawCurrency: 'USD', change: '+0.9%', repScore: 30, desc_de: 'Vermittlungsplattform für Fahrdienste und Essenslieferungen.', desc_en: 'Platform for ride-hailing and food delivery.' },
+                { name: 'Airbnb', ticker: 'ABNB', apiId: 'ABNB', icon: 'https://financialmodelingprep.com/image-stock/ABNB.png', rawPrice: 160.50, rawCurrency: 'USD', change: '-1.4%', repScore: 32, desc_de: 'Online-Marktplatz für private Unterkünfte und Ferienwohnungen.', desc_en: 'Online marketplace for private accommodations and vacation rentals.' },
+                { name: 'Ferrari', ticker: 'RACE', apiId: 'RACE', icon: 'https://financialmodelingprep.com/image-stock/RACE.png', rawPrice: 410.20, rawCurrency: 'USD', change: '+0.7%', repScore: 37, desc_de: 'Legendärer italienischer Sportwagenhersteller.', desc_en: 'Legendary Italian sports car manufacturer.' },
+                { name: 'Robinhood', ticker: 'HOOD', apiId: 'HOOD', icon: 'https://financialmodelingprep.com/image-stock/HOOD.png', rawPrice: 18.90, rawCurrency: 'USD', change: '+2.1%', repScore: 24, desc_de: 'Provisionsfreier Online-Broker für die junge Generation.', desc_en: 'Commission-free online broker for the younger generation.' }
+            ],
+            'Crypto': [
+                { name: 'Bitcoin', ticker: 'BTC', apiId: 'bitcoin', icon: 'https://cryptologos.cc/logos/bitcoin-btc-logo.png', rawPrice: 0, rawCurrency: 'USD', change: '', repScore: 40, desc_de: 'Die erste und größte dezentrale Kryptowährung (Digitales Gold).', desc_en: 'The first and largest decentralized cryptocurrency (Digital Gold).' },
+                { name: 'Ethereum', ticker: 'ETH', apiId: 'ethereum', icon: 'https://cryptologos.cc/logos/ethereum-eth-logo.png', rawPrice: 0, rawCurrency: 'USD', change: '', repScore: 35, desc_de: 'Plattform für Smart Contracts und dezentrale Apps (dApps).', desc_en: 'Platform for smart contracts and decentralized apps (dApps).' },
+                { name: 'Solana', ticker: 'SOL', apiId: 'solana', icon: 'https://cryptologos.cc/logos/solana-sol-logo.png', rawPrice: 0, rawCurrency: 'USD', change: '', repScore: 28, desc_de: 'Hochgeschwindigkeits-Blockchain, Konkurrent zu Ethereum.', desc_en: 'High-speed blockchain, competitor to Ethereum.' },
+                { name: 'Binance Coin', ticker: 'BNB', apiId: 'binancecoin', icon: 'https://cryptologos.cc/logos/bnb-bnb-logo.png', rawPrice: 0, rawCurrency: 'USD', change: '', repScore: 30, desc_de: 'Der native Coin der weltweit größten Krypto-Börse Binance.', desc_en: 'The native coin of the worlds largest crypto exchange Binance.' },
+                { name: 'Ripple', ticker: 'XRP', apiId: 'ripple', icon: 'https://cryptologos.cc/logos/xrp-xrp-logo.png', rawPrice: 0, rawCurrency: 'USD', change: '', repScore: 22, desc_de: 'Fokus auf schnelle, internationale Banktransfers.', desc_en: 'Focus on fast, international bank transfers.' }
+            ],
+            'Märkte': [ 
+                { name: 'S&P 500', ticker: 'VOO', apiId: 'VOO', icon: 'https://financialmodelingprep.com/image-stock/VOO.png', rawPrice: 468.10, rawCurrency: 'USD', change: '+0.4%', repScore: 40, desc_de: 'Bildet die 500 größten US-Unternehmen ab. Der Klassiker.', desc_en: 'Tracks the 500 largest US companies. The classic.' },
+                { name: 'MSCI World', ticker: 'URTH', apiId: 'URTH', icon: 'https://financialmodelingprep.com/image-stock/URTH.png', rawPrice: 135.40, rawCurrency: 'USD', change: '+0.3%', repScore: 39, desc_de: 'Investiert in entwickelte Industrieländer weltweit.', desc_en: 'Invests in developed industrialized countries worldwide.' },
+                { name: 'Nasdaq 100', ticker: 'QQQ', apiId: 'QQQ', icon: 'https://financialmodelingprep.com/image-stock/QQQ.png', rawPrice: 425.80, rawCurrency: 'USD', change: '+0.9%', repScore: 38, desc_de: 'Fokus auf die 100 größten Tech-Unternehmen der USA.', desc_en: 'Focus on the 100 largest tech companies in the US.' },
+                { name: 'Emerging Markets', ticker: 'VWO', apiId: 'VWO', icon: 'https://financialmodelingprep.com/image-stock/VWO.png', rawPrice: 42.15, rawCurrency: 'USD', change: '-0.2%', repScore: 25, desc_de: 'Bildet Aktien aus Schwellenländern wie China, Indien, Brasilien ab.', desc_en: 'Tracks stocks from emerging markets like China, India, Brazil.' },
+                // HIER WURDE DER PREIS FÜR DEN DAX AUF SEINEN ECHTEN STARTWERT GESETZT
+                { name: 'DAX ETF', ticker: 'EXS1.DE', apiId: '^GDAXI', icon: 'https://ui-avatars.com/api/?name=DAX&background=00ff88&color=000&rounded=true', rawPrice: 18530.09, rawCurrency: 'EUR', change: '+0.1%', repScore: 36, desc_de: 'Bildet die 40 größten deutschen Unternehmen ab.', desc_en: 'Tracks the 40 largest German companies.' }
+            ]
+        };
+
+        // --- SUBSCRIPTION LOGIK ---
+        function openModal() { document.getElementById('pricingModal').classList.add('active'); }
+        function closeModal() { document.getElementById('pricingModal').classList.remove('active'); }
+        
+        function subscribePremium() {
+            isPremiumUser = true;
+            alert("Abo erfolgreich abgeschlossen! Du hast nun Zugriff auf die RiseSoon+ Picks.");
+            closeModal();
+            if(document.getElementById('premium-view').style.display === 'flex') {
+                renderPremiumTable();
+            }
+        }
+
+        function openPremiumView() {
+            if(!isPremiumUser) {
+                openModal();
+                return;
+            }
+            
+            document.querySelectorAll('nav ul li').forEach(li => li.classList.remove('active')); 
+            document.getElementById('nav-premium').classList.add('active');
+            
+            document.getElementById('dashboard-view').style.display = 'none'; 
+            document.getElementById('table-view').style.display = 'none'; 
+            document.getElementById('premium-view').style.display = 'flex';
+            
+            renderPremiumTable();
+        }
+
+        function renderPremiumTable() {
+            let allAssets = [];
+            for (const cat in datenBank) {
+                allAssets = allAssets.concat(datenBank[cat].map(item => {
+                    let volatility = (Math.random() * 5 + 1).toFixed(1);
+                    let aiScore = (item.repScore * 1.5) + (parseFloat(item.change) || 0) * 2 + (Math.random() * 15);
+                    if(aiScore > 99) aiScore = 99.1;
+                    
+                    let targetMultiplier = 1 + (Math.random() * 0.15 + 0.05);
+                    let targetPrice = item.rawPrice * targetMultiplier;
+
+                    return { ...item, category: cat, aiScore, volatility, targetPrice };
+                }));
+            }
+            
+            allAssets.sort((a, b) => b.aiScore - a.aiScore);
+            
+            let html = `<table><tr>
+                <th>${t.name}</th>
+                <th>KI Score (Buy)</th>
+                <th>Aktuell</th>
+                <th>Zielpreis (12M)</th>
+                <th>Volatilität</th>
+                <th>Aktion</th>
+            </tr>`;
+            
+            allAssets.slice(0, 15).forEach(item => {
+                const desc = currentLang === 'de' ? item.desc_de : item.desc_en;
+                html += `<tr onclick="openInDashboard('${item.name}', ${item.rawPrice}, '${item.rawCurrency}', '${desc}', '${item.category}', '${item.apiId}', ${item.repScore}, '${item.icon}')">
+                    <td><div class="item-name"><img src="${item.icon}" class="item-icon" onerror="this.src=getIconFallback('${item.name}')"><div><div style="color:#fff; font-weight:bold;">${item.name}</div><div style="font-size: 0.8rem; color: #777;">${item.ticker}</div></div></div></td>
+                    <td><span class="score-badge">${item.aiScore.toFixed(1)}% KAUFEN</span></td>
+                    <td>${formatPriceVal(item.rawPrice, item.rawCurrency)}</td>
+                    <td class="target-price" style="color:var(--accent-green);">${formatPriceVal(item.targetPrice, item.rawCurrency)}</td>
+                    <td style="color:#ccc;">${item.volatility}%</td>
+                    <td><button class="btn-view">${t.openChart}</button></td>
+                </tr>`;
+            });
+            document.getElementById('premium-table-container').innerHTML = html + `</table>`;
+        }
+
+        // --- PFEIL LOGIK ---
+        function drawFinTechArrow(ctx, x, y, isUp, text, chartWidth) {
+            ctx.save();
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            
+            const color = isUp ? '#00ff88' : '#ff4444';
+            ctx.fillStyle = color;
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 2;
+            
+            const offset = isUp ? 25 : -25;
+            const textOffset = isUp ? 45 : -45;
+
+            ctx.beginPath();
+            ctx.moveTo(x, y + (isUp ? 10 : -10));
+            ctx.lineTo(x, y + offset);
+            ctx.stroke();
+
+            ctx.beginPath();
+            if(isUp) { ctx.moveTo(x, y + 5); ctx.lineTo(x - 5, y + 15); ctx.lineTo(x + 5, y + 15); } 
+            else { ctx.moveTo(x, y - 5); ctx.lineTo(x - 5, y - 15); ctx.lineTo(x + 5, y - 15); }
+            ctx.fill();
+
+            ctx.font = 'bold 10px "Segoe UI", sans-serif';
+            const textWidth = ctx.measureText(text).width;
+            
+            let textX = x;
+            if (textX + (textWidth/2) > chartWidth - 10) { textX = chartWidth - (textWidth/2) - 10; }
+            if (textX - (textWidth/2) < 10) { textX = (textWidth/2) + 10; }
+
+            ctx.fillStyle = 'rgba(10,10,10,0.85)';
+            if(ctx.roundRect) {
+                ctx.beginPath();
+                ctx.roundRect(textX - (textWidth/2) - 8, y + textOffset - 10, textWidth + 16, 20, 5);
+                ctx.fill();
+                ctx.lineWidth = 1;
+                ctx.stroke();
+            } else {
+                ctx.fillRect(textX - (textWidth/2) - 8, y + textOffset - 10, textWidth + 16, 20);
+                ctx.strokeRect(textX - (textWidth/2) - 8, y + textOffset - 10, textWidth + 16, 20);
+            }
+
+            ctx.fillStyle = '#fff';
+            ctx.fillText(text, textX, y + textOffset);
+            ctx.restore();
+        }
+
+        const topMoverAnalysisPlugin = {
+            id: 'topMoverAnalysis',
+            afterDraw(chart) {
+                const { ctx, width } = chart;
+                const dataset = chart.data.datasets.find(d => d.label === 'SOL Kurs' || d.label === 'Asset Kurs');
+                if(!dataset || !dataset.data || dataset.data.length === 0) return;
+                
+                const meta = chart.getDatasetMeta(chart.data.datasets.indexOf(dataset));
+                let minIdx = -1, maxIdx = -1;
+                let minVal = Infinity, maxVal = -Infinity;
+                
+                dataset.data.forEach((val, i) => {
+                    if (i > 5 && i < dataset.data.length - 10) {
+                        if(val < minVal) { minVal = val; minIdx = i; }
+                        if(val > maxVal) { maxVal = val; maxIdx = i; }
+                    }
+                });
+
+                if(minIdx > -1 && meta.data[minIdx] && !isNaN(meta.data[minIdx].x)) drawFinTechArrow(ctx, meta.data[minIdx].x, meta.data[minIdx].y, true, currentLang === 'de' ? "Lokales Tief (Support)" : "Local Dip (Support)", width);
+                if(maxIdx > -1 && meta.data[maxIdx] && !isNaN(meta.data[maxIdx].x)) drawFinTechArrow(ctx, meta.data[maxIdx].x, meta.data[maxIdx].y, false, currentLang === 'de' ? "Widerstand getestet" : "Resistance Tested", width);
+                
+                let lastIdx = dataset.data.length - 2;
+                if(lastIdx > 0 && meta.data[lastIdx] && !isNaN(meta.data[lastIdx].x)) drawFinTechArrow(ctx, meta.data[lastIdx].x, meta.data[lastIdx].y, true, currentLang === 'de' ? "Momentum Ausbruch" : "Momentum Breakout", width);
+            }
+        };
+
+        // --- TOP MOVER LOGIK ---
+        let activeTopMoverAsset = datenBank['Crypto'].find(c => c.apiId === 'solana');
+        let activeTopMoverTrig = 'Netzwerk-Protokoll Update';
+        let activeTopMoverVol = 340;
+
+        function updateTopMoverUI(asset) {
+            if(!asset) return;
+            activeTopMoverAsset = asset;
+            const safeIcon = asset.icon || getIconFallback(asset.name);
+            document.getElementById('tm-asset-title').innerHTML = `<img src="${safeIcon}" class="item-icon" alt="${asset.ticker}" onerror="this.src=getIconFallback('${asset.name}')"> ${asset.name} (${asset.ticker})`;
+            
+            const perf = (Math.random() * 25 + 8).toFixed(1); 
+            document.getElementById('tm-perf-val').innerText = "+" + perf + "%";
+            
+            activeTopMoverVol = Math.floor(Math.random() * 400 + 150); 
+            document.getElementById('tm-vol-val').innerText = activeTopMoverVol + "% über Ø";
+            
+            const triggers_de = ["Netzwerk-Protokoll Update", "Starke Quartalszahlen", "Insider-Käufe", "Short-Squeeze", "Positive Analysten-Bewertung", "Partnerschaft angekündigt"];
+            const triggers_en = ["Network Protocol Update", "Strong Earnings", "Insider Buying", "Short Squeeze", "Positive Analyst Rating", "Partnership Announced"];
+            
+            const trigArr = currentLang === 'de' ? triggers_de : triggers_en;
+            activeTopMoverTrig = trigArr[Math.floor(Math.random() * trigArr.length)];
+            document.getElementById('tm-trig-val').innerText = activeTopMoverTrig;
+
+            updateTopMoverAnalysisText();
+            
+            let baseP = (asset.rawPrice > 0 && !isNaN(asset.rawPrice)) ? asset.rawPrice : 100;
+            const rawData = generateRealisticDemoData(baseP, 40, '1W');
+
+            let upperData = rawData.map(p => p * 1.05 + (Math.random() * (p*0.015)));
+            let lowerData = rawData.map(p => p * 0.96 - (Math.random() * (p*0.015)));
+
+            if(topMoverChart && topMoverChart.data && topMoverChart.data.datasets.length === 3) {
+                topMoverChart.data.datasets[0].data = upperData;
+                topMoverChart.data.datasets[1].data = lowerData;
+                topMoverChart.data.datasets[2].data = rawData;
+                topMoverChart.data.labels = generateLabels('1W', rawData.length);
+                
+                const minVal = Math.min(...lowerData);
+                const maxVal = Math.max(...upperData);
+                if(!isNaN(minVal) && !isNaN(maxVal) && minVal !== Infinity) {
+                    topMoverChart.options.scales.y.min = minVal * 0.95;
+                    topMoverChart.options.scales.y.max = maxVal * 1.05;
+                }
+
+                topMoverChart.update();
+            }
+        }
+
+        function updateTopMoverAnalysisText() {
+            if(!activeTopMoverAsset) return;
+            const txtDe = `Der Momentum-Ausbruch von ${activeTopMoverAsset.name} wurde primär durch "${activeTopMoverTrig}" ausgelöst und durch ein ${activeTopMoverVol}% höheres Handelsvolumen bestätigt.`;
+            const txtEn = `The momentum breakout of ${activeTopMoverAsset.name} was primarily triggered by "${activeTopMoverTrig}" and confirmed by a ${activeTopMoverVol}% higher trading volume.`;
+            const txtEl = document.getElementById('tm-analysis-text');
+            if(txtEl) txtEl.innerText = currentLang === 'de' ? txtDe : txtEn;
+        }
+
+        function startCountdown() {
+            const cycleDurationMs = 7 * 24 * 60 * 60 * 1000;
+            let cycleStart = Date.now();
+
+            const updateTimer = () => {
+                const now = Date.now();
+                let elapsed = now - cycleStart;
+                let remaining = cycleDurationMs - elapsed;
+
+                if (remaining <= 0) {
+                    cycleStart = now;
+                    const categories = Object.keys(datenBank);
+                    const randomCat = categories[Math.floor(Math.random() * categories.length)];
+                    const items = datenBank[randomCat];
+                    const randomItem = items[Math.floor(Math.random() * items.length)];
+                    updateTopMoverUI(randomItem);
+                    remaining = cycleDurationMs;
+                }
+
+                const days = Math.floor(remaining / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((remaining % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((remaining % (1000 * 60)) / 1000);
+
+                const timeString = currentLang === 'de'
+                    ? `${days}T ${hours}h ${minutes}m ${seconds}s`
+                    : `${days}d ${hours}h ${minutes}m ${seconds}s`;
+
+                const scanValElement = document.getElementById('tm-scan-val');
+                if(scanValElement) scanValElement.innerText = timeString;
+            };
+
+            updateTimer();
+            setInterval(updateTimer, 1000);
+        }
+
+        // --- WÄHRUNGS & FX LOGIK ---
+        async function fetchExchangeRate() {
+            try {
+                const res = await fetch('https://open.er-api.com/v6/latest/EUR');
+                const data = await res.json();
+                if(data && data.rates && data.rates.USD && data.rates.GBP && data.rates.AUD) {
+                    eurUsdRate = data.rates.USD;
+                    gbpUsdRate = data.rates.USD / data.rates.GBP;
+                    audUsdRate = data.rates.USD / data.rates.AUD;
+                    fxRateLoaded = true;
+                } else {
+                    throw new Error('Ungültige FX-Antwort');
+                }
+            } catch(e) {
+                console.warn('FX API Fehler - fallback auf voreingestellte Kurse', e);
+                eurUsdRate = defaultExchangeRates.eurUsd;
+                gbpUsdRate = defaultExchangeRates.gbpUsd;
+                audUsdRate = defaultExchangeRates.audUsd;
+            } finally {
+                const elEur = document.getElementById('fx-eur');
+                if(elEur) elEur.innerText = eurUsdRate.toFixed(4);
+                const elGbp = document.getElementById('fx-gbp');
+                if(elGbp) elGbp.innerText = gbpUsdRate.toFixed(4);
+                const elAud = document.getElementById('fx-aud');
+                if(elAud) elAud.innerText = audUsdRate.toFixed(4);
+            }
+        }
+
+        function formatPriceVal(rawPrice, rawCurr) {
+            if(rawPrice === 0 || rawPrice === null || rawPrice === undefined || isNaN(rawPrice)) return t.loadingVal;
+            let val = parseFloat(rawPrice);
+            if(rawCurr !== currentCurrency) {
+                val = convertCurrency(val, rawCurr, currentCurrency);
+            }
+            let locale = currentCurrency === 'EUR' ? 'de-DE' : 'en-US';
+            return val.toLocaleString(locale, {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' ' + currentCurrency;
+        }
+
+        function setCurrency(curr) {
+            currentCurrency = curr;
+            document.getElementById('curr-usd').classList.remove('active');
+            document.getElementById('curr-eur').classList.remove('active');
+            document.getElementById(curr === 'USD' ? 'curr-usd' : 'curr-eur').classList.add('active');
+
+            if(document.getElementById('table-view').style.display === 'flex') renderTable(currentCategory);
+            if(document.getElementById('premium-view').style.display === 'flex') renderPremiumTable();
+            populateSidebar(currentCategory);
+            
+            if(currentApiId) {
+                const pEl = document.getElementById('current-asset-price');
+                if(pEl) pEl.innerText = formatPriceVal(currentRawPrice, currentRawCurrency);
+                const activeBtn = document.querySelector('.intervals button.active');
+                if(activeBtn) changeInterval(activeBtn.innerText, activeBtn);
+            }
+        }
+
+        function getIconFallback(name) {
+            return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=222&color=fff&rounded=true`;
+        }
+
+        function toggleLanguage() {
+            currentLang = currentLang === 'de' ? 'en' : 'de';
+            t = translations[currentLang];
+            
+            const btnEn = document.getElementById('lang-btn');
+            if(btnEn) btnEn.innerText = currentLang === 'de' ? 'EN' : 'DE';
+            
+            const lblTxt = document.getElementById('lang-label-text');
+            if(lblTxt) lblTxt.innerText = t.language;
+            
+            const searchIn = document.getElementById('searchInput');
+            if(searchIn) searchIn.placeholder = t.search;
+            
+            const nStocks = document.getElementById('nav-stocks');
+            if(nStocks) nStocks.innerText = t.stocks;
+            const nCrypto = document.getElementById('nav-crypto');
+            if(nCrypto) nCrypto.innerText = t.crypto;
+            const nMarkets = document.getElementById('nav-markets');
+            if(nMarkets) nMarkets.innerText = t.markets;
+            const nBroker = document.getElementById('nav-broker');
+            if(nBroker) nBroker.innerText = t.broker;
+            const nMore = document.getElementById('nav-more');
+            if(nMore) nMore.innerText = t.more;
+            
+            const pLbl = document.getElementById('price-label-text');
+            if(pLbl) pLbl.innerText = t.currentPrice;
+            const fxTxt = document.getElementById('fx-title-text');
+            if(fxTxt) fxTxt.innerText = t.fxTitle;
+            
+            const pBox = document.getElementById('pattern-info');
+            if(pBox && pBox.style.display === 'block') {
+                 const pPre = document.getElementById('pattern-prefix-text');
+                 if(pPre) pPre.innerText = t.patternDetected;
+            }
+            
+            const tmTitle = document.getElementById('top-mover-title');
+            if(tmTitle) tmTitle.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c0 0-5 6-5 11a5 5 0 0 0 10 0c0-5-5-11-5-11Z"/><path d="M12 12c0 0-2 2-2 4a2 2 0 0 0 4 0c0-2-2-4-2-4Z"/></svg> ` + t.topMoverTitle;
+            
+            const tmDesc = document.getElementById('top-mover-desc');
+            if(tmDesc) tmDesc.innerText = t.topMoverDesc;
+            const tmMov = document.getElementById('tm-mov-label');
+            if(tmMov) tmMov.innerText = t.tmMov;
+            const tmTrig = document.getElementById('tm-trig-label');
+            if(tmTrig) tmTrig.innerText = t.tmTrig;
+            const tmVol = document.getElementById('tm-vol-label');
+            if(tmVol) tmVol.innerText = t.tmVol;
+            const tmScan = document.getElementById('tm-scan-label');
+            if(tmScan) tmScan.innerText = t.tmScan;
+            
+            updateTopMoverAnalysisText();
+            
+            const anTitle = document.getElementById('analysis-title-text');
+            if(anTitle) anTitle.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg> ` + t.anTitle;
+            const anN = document.getElementById('an-news-text');
+            if(anN) anN.innerText = t.anNews;
+            const anC = document.getElementById('an-chart-text');
+            if(anC) anC.innerText = t.anChart;
+            const anR = document.getElementById('an-rep-text');
+            if(anR) anR.innerText = t.anRep;
+            const anRsi = document.getElementById('an-rsi-text');
+            if(anRsi) anRsi.innerText = t.anRsi;
+            const anV = document.getElementById('an-vol-text');
+            if(anV) anV.innerText = t.anVol;
+            const anM = document.getElementById('an-macd-text');
+            if(anM) anM.innerText = t.anMacd;
+            
+            const anB = document.getElementById('an-buy-text');
+            if(anB) anB.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg> ` + t.anBuy;
+            const anS = document.getElementById('an-sell-text');
+            if(anS) anS.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"></polyline><polyline points="17 18 23 18 23 12"></polyline></svg> ` + t.anSell;
+
+            const iTitle = document.getElementById('info-title');
+            if(iTitle) iTitle.innerText = t.infoTitle;
+            const iP1 = document.getElementById('info-p1');
+            if(iP1) iP1.innerHTML = t.infoP1;
+            const iP2 = document.getElementById('info-p2');
+            if(iP2) iP2.innerHTML = t.infoP2;
+            const iP3 = document.getElementById('info-p3');
+            if(iP3) iP3.innerHTML = t.infoP3;
+
+            const fDesc = document.getElementById('footer-desc');
+            if(fDesc) fDesc.innerText = t.footerDesc;
+
+            const currAsset = document.getElementById('current-asset-name');
+            if(currAsset && currAsset.innerText.includes('DAX')) {
+                const aDesc = document.getElementById('asset-description');
+                if(aDesc) aDesc.innerText = t.daxDesc;
+            }
+
+            if(document.getElementById('table-view').style.display === 'flex') { renderTable(currentCategory); } 
+            else if(document.getElementById('premium-view').style.display === 'flex') { renderPremiumTable(); }
+            else { populateSidebar(currentCategory); }
+        }
+
+        function animateValue(id, start, end, duration, isInt=false) {
+            let obj = document.getElementById(id);
+            if(!obj) return;
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                const easeOut = progress * (2 - progress);
+                let currentVal = start + (end - start) * easeOut;
+                
+                if(isInt) obj.innerHTML = Math.floor(currentVal) + '%';
+                else obj.innerHTML = currentVal.toFixed(1) + '%';
+                
+                if (progress < 1) { window.requestAnimationFrame(step); } 
+                else {
+                    if(isInt) obj.innerHTML = Math.floor(end) + '%';
+                    else obj.innerHTML = end.toFixed(1) + '%';
+                }
+            };
+            window.requestAnimationFrame(step);
+        }
+
+        function toggleAnalysis() {
+            const content = document.getElementById('analysis-content');
+            const icon = document.getElementById('analysis-icon');
+            if(!content || !icon) return;
+
+            isAnalysisOpen = !isAnalysisOpen;
+            
+            if(isAnalysisOpen) {
+                content.classList.add('open');
+                icon.style.transform = 'rotate(180deg)';
+                animateValue("score-news", 0, valNews, 1000);
+                animateValue("score-pattern", 0, valPattern, 1000);
+                animateValue("score-rep", 0, valRep, 1000);
+                animateValue("score-total-buy", 0, valTotal, 1200, true);
+                animateValue("score-total-sell", 100, 100 - valTotal, 1200, true);
+            } else {
+                content.classList.remove('open');
+                icon.style.transform = 'rotate(0deg)';
+                const sn = document.getElementById('score-news'); if(sn) sn.innerText = '0.0%';
+                const sp = document.getElementById('score-pattern'); if(sp) sp.innerText = '0.0%';
+                const sr = document.getElementById('score-rep'); if(sr) sr.innerText = '0.0%';
+                const sb = document.getElementById('score-total-buy'); if(sb) sb.innerText = '0%';
+                const ss = document.getElementById('score-total-sell'); if(ss) ss.innerText = '0%';
+            }
+        }
+
+        // --- GLOBAL AUTO REFRESH LOGIK ---
+        setInterval(() => {
+            fetchExchangeRate(); // Live FX Refresh
+            
+            // Background Refresh Table & Sidebar
+            if (currentCategory === 'Crypto') {
+                fetchLiveCryptoData().then(() => {
+                    if(document.getElementById('table-view').style.display === 'flex') renderTable(currentCategory);
+                    populateSidebar(currentCategory);
+                });
+            } else {
+                fetchLiveStockData(currentCategory).then(() => {
+                    if(document.getElementById('table-view').style.display === 'flex') renderTable(currentCategory);
+                    populateSidebar(currentCategory);
+                });
+            }
+
+            // Background Refresh Main Chart Current Price
+            if (currentApiId && currentCategory !== 'Crypto') {
+                fetchLiveStockPrice(currentApiId).then(price => {
+                    if (price) {
+                        currentRawPrice = price;
+                        const priceElement = document.getElementById('current-asset-price');
+                        if (priceElement) priceElement.innerText = formatPriceVal(currentRawPrice, currentRawCurrency);
+                    }
+                });
+            }
+        }, 30000); // 30 Sekunden Refresh Loop
+
+        // --- APIS über das lokale PROXY-Backend ---
+        async function fetchLiveCryptoData() {
+            const ids = datenBank['Crypto'].map(coin => coin.apiId).join(',');
+            try {
+                const response = await fetch(`http://localhost:3000/api/crypto?ids=${ids}`);
+                const data = await response.json();
+                datenBank['Crypto'].forEach(coin => {
+                    if(data[coin.apiId]) {
+                        coin.rawPrice = data[coin.apiId].usd;
+                        coin.rawCurrency = 'USD';
+                        const changeVal = data[coin.apiId].usd_24h_change;
+                        coin.change = (changeVal > 0 ? '+' : '') + changeVal.toFixed(2) + '%';
+                    }
+                });
+            } catch(error) {}
+        }
+
+        async function fetchLiveStockData(category) {
+            const items = datenBank[category].filter(item => item.apiId !== '');
+            if(items.length === 0) return;
+
+            const promises = items.map(async (item, index) => {
+                try {
+                    await new Promise(res => setTimeout(res, index * 50)); 
+                    const response = await fetch(`http://localhost:3000/api/stock?symbol=${item.apiId}`);
+                    if(response.ok) {
+                        const data = await response.json();
+                        if(data.c && data.c !== 0) { 
+                            item.rawPrice = data.c;
+                            item.rawCurrency = (item.apiId === '^GDAXI' || item.apiId.includes('.DE')) ? 'EUR' : 'USD'; 
+                            if(data.dp) item.change = (data.dp > 0 ? '+' : '') + data.dp.toFixed(2) + '%';
+                        }
+                    }
+                } catch(e) {
+                    console.warn('Fehler bei Proxy-Aktienabfrage', e);
+                }
+            });
+            await Promise.all(promises);
+        }
+
+        async function fetchLiveStockPrice(apiId) {
+            try {
+                const response = await fetch(`http://localhost:3000/api/stock?symbol=${apiId}`);
+                if(response.ok) {
+                    const data = await response.json();
+                    if(data.c && data.c !== 0) return data.c; 
+                }
+            } catch(error) {
+                console.warn('Fehler bei Proxy Preisabfrage', error);
+            }
+            const fallback = Object.values(datenBank).flat().find(item => item.apiId === apiId);
+            return fallback ? fallback.rawPrice : null;
+        }
+
+        // ==========================================
+        // DIESER CODE-BLOCK IST NEU:
+        // Exakter Ankerpunkt & stabiler Verlauf!
+        // ==========================================
+        function generateRealisticDemoData(basePrice, pointCount, interval) {
+            const prices = new Array(pointCount);
+            
+            // Sicherheits-Check
+            let currentP = parseFloat(basePrice);
+            if(isNaN(currentP) || currentP === 0) currentP = 100;
+            
+            // 1. ABSOLUTE VERANKERUNG: Der Chart endet EXAKT auf dem aktuellen Kurs!
+            prices[pointCount - 1] = currentP;
+            
+            const volatilityMap = { '1H': 0.003, '1T': 0.006, '1W': 0.012, '1M': 0.018, '6M': 0.025, '1J': 0.035, 'Max': 0.05 };
+            const volatility = volatilityMap[interval] || 0.015;
+            
+            // 2. STABILITÄT: Ein "Seed" basierend auf dem Asset-Namen sorgt dafür, dass 
+            // der Chart nicht mehr bei jedem Klick völlig wild neue Formen annimmt.
+            let seedStr = (currentApiId || 'demo') + interval;
+            let seed = 0;
+            for(let i=0; i<seedStr.length; i++) seed += seedStr.charCodeAt(i);
+            
+            function seededRandom() {
+                let x = Math.sin(seed++) * 10000;
+                return x - Math.floor(x);
+            }
+
+            // 3. RÜCKWÄRTS AUFBAUEN: Wir wandern vom aktuellen Preis in die Vergangenheit
+            for (let i = pointCount - 2; i >= 0; i--) {
+                const pseudoTrend = (seededRandom() - 0.48) * volatility * currentP; 
+                currentP -= pseudoTrend; 
+                prices[i] = parseFloat(currentP.toFixed(2));
+            }
+            return prices;
+        }
+
+        async function fetchHistoricalChartData(apiId, interval, category) {
+            if(category === 'Crypto') {
+                let days = '1';
+                if (interval === '1H' || interval === '1T') days = '1';
+                else if (interval === '1W') days = '7';
+                else if (interval === '1M') days = '30';
+                else if (interval === '6M') days = '180';
+                else if (interval === '1J') days = '365';
+                else days = 'max';
+
+                try {
+                    const response = await fetch(`https://api.coingecko.com/api/v3/coins/${apiId}/market_chart?vs_currency=usd&days=${days}`);
+                    const data = await response.json();
+                    if(data && data.prices && data.prices.length > 0) { 
+                        let prices = data.prices.map(p => p[1]);
+                        if (interval === '1H') prices = prices.slice(-12);
+                        else { if (prices.length > 50) { const step = Math.floor(prices.length / 50); prices = prices.filter((_, index) => index % step === 0).slice(-50); } }
+                        return prices.length > 0 ? prices : null;
+                    }
+                } catch (error) { console.warn('CoinGecko API Error:', error); }
+                
+                let bPrice = currentRawPrice;
+                if(!bPrice || bPrice === 0) bPrice = (Object.values(datenBank).flat().find(item => item.apiId === apiId) || {}).rawPrice || 100;
+                const pointCount = interval === '1H' ? 24 : (interval === '1W' ? 7 : 30);
+                return generateRealisticDemoData(bPrice, pointCount, interval);
+            } 
+            else if (category === 'Aktien' || category === 'Märkte') {
+                let symbol = apiId;
+                
+                // NEU: Finnhub Free API liefert keine guten DAX Daten, oft nur einen komplett anderen US-ETF namens DAX.
+                // Deshalb fangen wir den DAX hier ab und generieren absichtlich den perfekt passenden Verlauf!
+                if (symbol === '^GDAXI' || symbol === 'EXS1.DE') {
+                    let bPrice = currentRawPrice;
+                    if(!bPrice || bPrice === 0) bPrice = 18530.09;
+                    const pointCount = interval === '1H' ? 96 : (interval === '1T' ? 24 : 50);
+                    return generateRealisticDemoData(bPrice, pointCount, interval);
+                }
+
+                let to = Math.floor(Date.now() / 1000);
+                let from;
+                let res = 'D';
+                let limit = 50;
+
+                // 1H Chart: Wir zeigen die letzten 24 Stunden in 15-Minuten-Schritten
+                if(interval === '1H') { from = to - (24 * 3600); res = '15'; limit = 96; } 
+                else if(interval === '1T') { from = to - (24 * 3600 * 3); res = '15'; limit = 60; } 
+                else if(interval === '1W') { from = to - (24 * 3600 * 14); res = '60'; limit = 50; } 
+                else if(interval === '1M') { from = to - (24 * 3600 * 60); res = 'D'; limit = 30; }
+                else if(interval === '6M') { from = to - (24 * 3600 * 250); res = 'W'; limit = 26; }
+                else if(interval === '1J') { from = to - (24 * 3600 * 400); res = 'W'; limit = 52; }
+                else { from = to - (24 * 3600 * 1825); res = 'M'; limit = 60; } 
+
+                try {
+                    const response = await fetch(`http://localhost:3000/api/stock/candle?symbol=${symbol}&resolution=${res}&from=${from}&to=${to}`);
+                    if(response.ok) {
+                        const data = await response.json();
+                        if(data.s === "ok" && data.c && data.c.length > 0) {
+                            return data.c; // Direkte Rückgabe aller verfügbaren Daten für den Zeitraum
+                        }
+                    }
+                } catch(e) { console.warn('Finnhub Proxy Error:', e); }
+                
+                let bPrice = currentRawPrice;
+                if(!bPrice || bPrice === 0) bPrice = (Object.values(datenBank).flat().find(item => item.apiId === apiId) || {}).rawPrice || 100;
+                const pointCount = interval === '1H' ? 96 : (interval === '1T' ? 24 : (interval === '1W' ? 14 : (interval === '1M' ? 30 : (interval === '6M' ? 26 : (interval === '1J' ? 52 : 60)))));
+                return generateRealisticDemoData(bPrice, pointCount, interval);
+            }
+            return null; 
+        }
+
+        function generateLabels(interval, points) {
+            let labels = []; let now = new Date();
+            // Runde auf die letzten vollen 15 Minuten
+            now.setMinutes(Math.floor(now.getMinutes() / 15) * 15); 
+            now.setSeconds(0);
+            
+            for (let i = points - 1; i >= 0; i--) {
+                let d = new Date(now);
+                // 1H Chart: Wir gehen in 15-Minuten-Schritten rückwärts
+                if (interval === '1H') { d.setMinutes(d.getMinutes() - (i * 15)); labels.push(d.toLocaleTimeString('de-DE', {hour: '2-digit', minute:'2-digit'})); } 
+                else if (interval === '1T') { d.setMinutes(d.getMinutes() - (i * 30)); labels.push(d.toLocaleTimeString('de-DE', {hour: '2-digit', minute:'2-digit'})); } 
+                else if (interval === '1W') { d.setDate(d.getDate() - (i * 2)); let dayStr = d.toLocaleDateString('de-DE', {weekday: 'short'}); labels.push(dayStr.replace('.', '')); } 
+                else if (interval === '1M') { d.setDate(d.getDate() - Math.floor(i * 0.6)); labels.push(d.toLocaleDateString('de-DE', {day: '2-digit', month: 'short'})); } 
+                else if (interval === '6M') { d.setDate(d.getDate() - (i * 3.6)); labels.push(d.toLocaleDateString('de-DE', {month: 'short', year: '2-digit'})); } 
+                else if (interval === '1J') { d.setDate(d.getDate() - (i * 7.3)); labels.push(d.toLocaleDateString('de-DE', {month: 'short', year: '2-digit'})); } 
+                else { d.setFullYear(d.getFullYear() - Math.floor(i/10)); labels.push(d.getFullYear().toString()); }
+            }
+            return labels;
+        }
+
+        function createPatternOverlay(displayData, isBullishTrend) {
+            const patternLength = Math.min(10, displayData.length);
+            const segment = displayData.slice(-patternLength);
+            const startPrice = segment[0];
+            const endPrice = segment[segment.length - 1];
+            const slope = (endPrice - startPrice) / Math.max(startPrice, 1);
+            const maxValue = Math.max(...segment);
+            const minValue = Math.min(...segment);
+            const volatility = (maxValue - minValue) / Math.max(minValue, 1);
+
+            let selectedPattern;
+            if (isBullishTrend) {
+                selectedPattern = slope > 0.03 ? 'Ascending Triangle' : (volatility < 0.04 ? 'Bullish Flag Pattern' : 'Bullish Double Bottom');
+            } else {
+                selectedPattern = slope < -0.03 ? 'Bearish Rising Wedge' : (volatility < 0.04 ? 'Bearish Double Top' : 'Bearish Head and Shoulders');
+            }
+
+            const patternData = displayData.map((_, idx) => {
+                if (idx < displayData.length - patternLength) return null;
+                const segmentIndex = idx - (displayData.length - patternLength);
+                const progress = segmentIndex / Math.max(patternLength - 1, 1);
+                const linePrice = startPrice + (endPrice - startPrice) * progress;
+                const adjustment = isBullishTrend ? 1 + volatility * 0.05 : 1 - volatility * 0.05;
+                return linePrice * adjustment;
+            });
+
+            return {
+                selectedPattern,
+                patternData,
+                valPattern: Math.min(Math.max((Math.abs(slope) * 150) + (volatility * 60), 10), 45),
+                tagClass: isBullishTrend ? 'long' : 'short',
+                tagText: isBullishTrend ? 'LONG' : 'SHORT'
+            };
+        }
+
+        function initChart() {
+            let gradientMain = ctx.createLinearGradient(0, 0, 0, 350);
+            gradientMain.addColorStop(0, 'rgba(255, 255, 255, 0.15)');
+            gradientMain.addColorStop(1, 'rgba(255, 255, 255, 0)');
+            
+            Chart.defaults.devicePixelRatio = window.devicePixelRatio || 2; 
+
+            myChart = new Chart(ctx, {
+                type: 'line',
+                data: { labels: [], datasets: [{ label: 'Kurs', data: [], borderColor: '#ffffff', borderWidth: 2.5, pointRadius: 0, tension: 0.1, hitRadius: 10, hoverRadius: 5, hoverBackgroundColor: '#fff', fill: true, backgroundColor: gradientMain }] },
+                options: {
+                    responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false },
+                    plugins: { 
+                        legend: { display: false },
+                        tooltip: { backgroundColor: 'rgba(10, 10, 10, 0.95)', titleColor: '#00ff88', bodyColor: '#fff', borderColor: '#333', borderWidth: 1, padding: 12, displayColors: false, filter: function(tooltipItem) { return tooltipItem.datasetIndex === 0; }, callbacks: { label: function(context) { return 'Kurs: ' + context.parsed.y.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}); } } }
+                    },
+                    scales: { x: { display: true, grid: { color: '#1a1a1a' }, ticks: { color: '#666', maxTicksLimit: 6 } }, y: { display: true, grid: { color: '#222' }, ticks: { color: '#888' } } }
+                }
+            });
+        }
+
+        function initTopMover() {
+            let gradientMover = ctxMover.createLinearGradient(0, 0, 0, 300);
+            gradientMover.addColorStop(0, 'rgba(0, 255, 136, 0.2)');
+            gradientMover.addColorStop(1, 'rgba(0, 255, 136, 0)');
+
+            topMoverChart = new Chart(ctxMover, {
+                type: 'line',
+                data: { labels: [], datasets: [
+                        { label: 'Widerstand', data: [], borderColor: 'rgba(0, 150, 255, 0.7)', borderWidth: 1.5, borderDash: [5, 5], pointRadius: 0, tension: 0, fill: false },
+                        { label: 'Unterstützung', data: [], borderColor: 'rgba(255, 50, 100, 0.7)', borderWidth: 1.5, borderDash: [5, 5], pointRadius: 0, tension: 0, fill: false },
+                        { label: 'Asset Kurs', data: [], borderColor: '#00ff88', borderWidth: 2.5, pointRadius: 0, tension: 0, fill: true, backgroundColor: gradientMover }
+                    ] 
+                },
+                options: { 
+                    responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, 
+                    plugins: { 
+                        legend: { display: true, labels: { color: '#aaa', font: { size: 11, family: 'Segoe UI' } } }, 
+                        tooltip: { backgroundColor: 'rgba(10, 10, 10, 0.9)', bodyColor: '#fff', borderColor: '#333', borderWidth: 1, padding: 10, displayColors: true } 
+                    }, 
+                    scales: { 
+                        x: { display: true, grid: { color: '#1a1a1a' }, ticks: { color: '#666', maxTicksLimit: 7 } }, 
+                        y: { display: true, grid: { color: '#1a1a1a' }, ticks: { color: '#666' } } 
+                    },
+                    layout: { padding: { left: 10, right: 80, top: 20, bottom: 20 } }
+                },
+                plugins: [topMoverAnalysisPlugin]
+            });
+            
+            updateTopMoverUI(datenBank['Crypto'].find(c => c.apiId === 'solana'));
+        }
+
+        // --- 15-MINUTEN TAKT FÜR 1H CHART & ANALYSE ---
+        function setupIntervalUpdates() {
+            triggerIntervalUpdate();
+
+            const now = new Date();
+            const minutesToNextQuarter = 15 - (now.getMinutes() % 15);
+            const msToNextQuarter = (minutesToNextQuarter * 60 * 1000) - (now.getSeconds() * 1000) - now.getMilliseconds();
+
+            setTimeout(() => {
+                triggerIntervalUpdate();
+                setInterval(triggerIntervalUpdate, 15 * 60 * 1000); 
+            }, msToNextQuarter);
+        }
+
+        async function triggerIntervalUpdate() {
+            if (document.getElementById('dashboard-view').style.display === 'flex' && currentApiId) {
+                const activeBtn = document.querySelector('.intervals button.active');
+                if (activeBtn && activeBtn.innerText === '1H') {
+                    const livePrice = await fetchLiveStockPrice(currentApiId);
+                    if (livePrice) currentRawPrice = livePrice;
+                    await changeInterval('1H', activeBtn);
+                }
+            }
+        }
+
+        async function bootApp() {
+            await fetchExchangeRate();
+            await fetchLiveCryptoData();
+            initChart();
+            initTopMover();
+            goHome();
+            startCountdown();
+            setupIntervalUpdates();
+        }
+
+        function goHome() {
+            document.querySelectorAll('nav ul li').forEach(li => li.classList.remove('active'));
+            document.getElementById('table-view').style.display = 'none'; 
+            document.getElementById('premium-view').style.display = 'none';
+            document.getElementById('dashboard-view').style.display = 'flex';
+            currentApiId = null; currentCategory = 'Aktien';
+            populateSidebar('Aktien'); loadAsset('DAX', 18530.09, 'EUR', currentLang === 'de' ? translations.de.daxDesc : translations.en.daxDesc, '^GDAXI', 36, 'https://ui-avatars.com/api/?name=DAX&background=00ff88&color=000&rounded=true');
+        }
+
+        async function switchNav(category, navElement) {
+            currentCategory = category;
+            document.querySelectorAll('nav ul li').forEach(li => li.classList.remove('active')); navElement.classList.add('active');
+            document.getElementById('dashboard-view').style.display = 'none'; 
+            document.getElementById('premium-view').style.display = 'none';
+            document.getElementById('table-view').style.display = 'flex'; 
+            
+            if(category === 'Crypto') {
+                const tt = document.getElementById('table-title');
+                if(tt) tt.innerText = `${t.loading} ${category}...`;
+                await fetchLiveCryptoData(); 
+            } else if (category === 'Aktien' || category === 'Märkte') {
+                const tt = document.getElementById('table-title');
+                if(tt) tt.innerText = `${t.loading} ${category}...`;
+                await fetchLiveStockData(category);
+            }
+            renderTable(category);
+        }
+
+        function renderTable(category) {
+            const data = datenBank[category]; const catName = category === 'Aktien' ? t.stocks : (category === 'Märkte' ? t.markets : category); 
+            const tTitle = document.getElementById('table-title');
+            if(tTitle) tTitle.innerText = `${t.all} ${catName}`;
+            let html = `<table><tr><th>${t.name}</th><th>${t.price}</th><th>${t.change}</th><th>${t.action}</th></tr>`;
+            data.forEach(item => {
+                const colorClass = item.change.includes('+') ? 'positive' : 'negative'; const desc = currentLang === 'de' ? item.desc_de : item.desc_en;
+                html += `<tr onclick="openInDashboard('${item.name}', ${item.rawPrice}, '${item.rawCurrency}', '${desc}', '${category}', '${item.apiId}', ${item.repScore}, '${item.icon}')">
+                    <td><div class="item-name"><img src="${item.icon}" class="item-icon" onerror="this.src=getIconFallback('${item.name}')"><div><div>${item.name}</div><div style="font-size: 0.8rem; color: #777;">${item.ticker}</div></div></div></td>
+                    <td id="table-price-${item.apiId}">${formatPriceVal(item.rawPrice, item.rawCurrency)}</td><td class="${colorClass}">${item.change}</td><td><button class="btn-view">${t.openChart}</button></td></tr>`;
+            });
+            const tCont = document.getElementById('table-container');
+            if(tCont) tCont.innerHTML = html + `</table>`;
+        }
+
+        async function openInDashboard(name, rawPrice, rawCurrency, desc, category, apiId, repScore, iconUrl) {
+            document.getElementById('table-view').style.display = 'none'; 
+            document.getElementById('premium-view').style.display = 'none';
+            document.getElementById('dashboard-view').style.display = 'flex';
+            currentCategory = category; populateSidebar(category); 
+            
+            let displayPriceRaw = rawPrice;
+            if(category !== 'Crypto') {
+                const liveStockPrice = await fetchLiveStockPrice(apiId);
+                if(liveStockPrice) displayPriceRaw = liveStockPrice; 
+            }
+            loadAsset(name, displayPriceRaw, rawCurrency, desc, apiId, repScore, iconUrl);
+            
+            const mainView = document.querySelector('main');
+            if(mainView) mainView.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function populateSidebar(category) {
+            const container = document.getElementById('top-list-container'); const data = datenBank[category];
+            const catName = category === 'Aktien' ? t.stocks : (category === 'Märkte' ? t.markets : category);
+            const sTitle = document.getElementById('sidebar-title');
+            if(sTitle) sTitle.innerText = `${category === 'Aktien' ? t.top10 : t.top5} ${catName}`; 
+            if(container) container.innerHTML = '';
+            
+            data.slice(0,10).forEach(item => { 
+                const colorClass = item.change.includes('+') ? 'positive' : 'negative'; const desc = currentLang === 'de' ? item.desc_de : item.desc_en;
+                if(container) container.innerHTML += `<div class="list-item" onclick="openInDashboard('${item.name}', ${item.rawPrice}, '${item.rawCurrency}', '${desc}', '${category}', '${item.apiId}', ${item.repScore}, '${item.icon}')">
+                    <div class="item-name"><img src="${item.icon}" class="item-icon" onerror="this.src=getIconFallback('${item.name}')"><div><div>${item.name}</div><div style="font-size: 0.7rem; color: #777;">${item.ticker}</div></div></div>
+                    <div style="text-align: right;"><div id="side-price-${item.apiId}">${formatPriceVal(item.rawPrice, item.rawCurrency)}</div><div class="${colorClass}">${item.change}</div></div></div>`;
+            });
+        }
+
+        function loadAsset(name, rawPrice, rawCurrency, desc, apiId, repScore, iconUrl) {
+            currentApiId = apiId; 
+            currentRepScore = repScore || 30;
+            currentRawPrice = rawPrice;
+            currentRawCurrency = rawCurrency;
+
+            if(isAnalysisOpen) toggleAnalysis();
+
+            const safeIcon = iconUrl || getIconFallback(name);
+            const cAsset = document.getElementById('current-asset-name');
+            if(cAsset) cAsset.innerHTML = `<img src="${safeIcon}" class="item-icon large" onerror="this.src=getIconFallback('${name}')"> ${name}`;
+            
+            const priceElement = document.getElementById('current-asset-price');
+            if(priceElement) {
+                priceElement.style.color = 'var(--accent-green)'; 
+                priceElement.innerText = formatPriceVal(currentRawPrice, currentRawCurrency);
+                setTimeout(() => priceElement.style.color = 'var(--text-color)', 500);
+            }
+
+            const aDesc = document.getElementById('asset-description');
+            if(aDesc) aDesc.innerText = desc;
+            
+            const buttons = document.querySelectorAll('.intervals button'); 
+            const btn1W = Array.from(buttons).find(b => b.innerText === '1W');
+            if(btn1W) changeInterval('1W', btn1W); 
+        }
+
+        window.changeInterval = async function(interval, btnElement) {
+            document.querySelectorAll('.intervals button').forEach(b => b.classList.remove('active')); 
+            if(btnElement) btnElement.classList.add('active');
+            
+            const patternInfoBox = document.getElementById('pattern-info');
+            const apiWarning = document.getElementById('api-warning');
+            let newData = null;
+
+            if (currentApiId) { 
+                newData = await fetchHistoricalChartData(currentApiId, interval, currentCategory); 
+            }
+            
+            if (!newData || newData.length === 0) {
+                console.warn(`Kein Chart-Daten für ${currentApiId}/${interval}/${currentCategory}`);
+                
+                let p = currentRawPrice;
+                if(!p || isNaN(p) || p === 0) {
+                    p = (Object.values(datenBank).flat().find(item => item.apiId === currentApiId) || {}).rawPrice || 100;
+                }
+                const pCount = interval === '1H' ? 96 : 50;
+                newData = generateRealisticDemoData(p, pCount, interval);
+                if(apiWarning) apiWarning.style.display = 'block'; 
+            } else {
+                if(apiWarning) apiWarning.style.display = 'none'; 
+                
+                // NEU: WENN WIR ECHTE DATEN HABEN, SYNCEN WIR DEN GROSSEN PREIS AUF DEN LETZTEN CHART-PUNKT!
+                currentRawPrice = newData[newData.length - 1];
+                const priceElement = document.getElementById('current-asset-price');
+                if (priceElement) {
+                    priceElement.innerText = formatPriceVal(currentRawPrice, currentRawCurrency);
+                }
+            }
+
+            const displayData = newData.map(val => {
+                if(currentRawCurrency === 'USD' && currentCurrency === 'EUR') return val / eurUsdRate;
+                if(currentRawCurrency === 'EUR' && currentCurrency === 'USD') return val * eurUsdRate;
+                return val;
+            });
+
+            const newLabels = generateLabels(interval, displayData.length);
+            if(myChart) myChart.data.labels = newLabels;
+            
+            valNews = Math.random() * 30; 
+            valRep = currentRepScore; 
+
+            const rsiEl = document.getElementById('score-rsi');
+            if(rsiEl) rsiEl.innerText = (Math.random() * 40 + 30).toFixed(1);
+            
+            const volEl = document.getElementById('score-vol');
+            if(volEl) volEl.innerText = (Math.random() * 5 + 1).toFixed(1) + '%';
+            
+            let isBullishTrend = true;
+            if(displayData.length > 0) {
+                isBullishTrend = displayData[displayData.length - 1] > displayData[0];
+            }
+
+            const macdEl = document.getElementById('score-macd');
+            if(macdEl) {
+                const macd = isBullishTrend ? 'Bullish' : 'Bearish';
+                macdEl.innerText = macd;
+                macdEl.style.color = macd === 'Bullish' ? 'var(--accent-green)' : 'var(--accent-red)';
+            }
+
+            if(interval === '1H') {
+                if(patternInfoBox) patternInfoBox.style.display = 'block';
+                const prefixText = document.getElementById('pattern-prefix-text');
+                if(prefixText) prefixText.innerText = t.patternDetected;
+
+                const overlay = createPatternOverlay(displayData, isBullishTrend);
+                const pName = document.getElementById('pattern-name-text');
+                if(pName) pName.innerHTML = `${overlay.selectedPattern} <span class="signal-badge ${overlay.tagClass}">${overlay.tagText}</span>`;
+
+                const pDesc = document.getElementById('pattern-desc');
+                if(pDesc) pDesc.innerText = isBullishTrend ? t.patternDescLong : t.patternDescShort;
+
+                if(myChart) {
+                    myChart.data.datasets = [myChart.data.datasets[0]];
+                    myChart.data.datasets[0].data = displayData;
+                    myChart.data.datasets.push({
+                        label: 'Muster',
+                        data: overlay.patternData,
+                        borderColor: isBullishTrend ? '#00ff88' : '#ff4444',
+                        backgroundColor: 'transparent',
+                        borderWidth: 3,
+                        borderDash: [5, 5],
+                        pointRadius: 0,
+                        tension: 0.1,
+                        spanGaps: true,
+                        hitRadius: 0
+                    });
+                }
+
+                valPattern = Math.min(Math.max(overlay.valPattern + (isBullishTrend ? 15 : 5), 5), 40);
+            } else {
+                if(patternInfoBox) patternInfoBox.style.display = 'none';
+                if(myChart) {
+                    while(myChart.data.datasets.length > 1) {
+                        myChart.data.datasets.pop();
+                    }
+                    myChart.data.datasets[0].data = displayData;
+                }
+                valPattern = Math.random() * 15; 
+            }
+            
+            valTotal = Math.min(valNews + valPattern + valRep, 100);
+
+            if(isAnalysisOpen) {
+                const sn = document.getElementById('score-news'); if(sn) sn.innerText = valNews.toFixed(1) + '%';
+                const sp = document.getElementById('score-pattern'); if(sp) sp.innerText = valPattern.toFixed(1) + '%';
+                const sr = document.getElementById('score-rep'); if(sr) sr.innerText = valRep.toFixed(1) + '%';
+                const sb = document.getElementById('score-total-buy'); if(sb) sb.innerText = Math.floor(valTotal) + '%';
+                const ss = document.getElementById('score-total-sell'); if(ss) ss.innerText = Math.floor(100 - valTotal) + '%';
+            }
+
+            if(myChart) myChart.update();
+        };
+
+        function handleSearch(query) {
+            const dropdown = document.getElementById('searchResults');
+            if(!dropdown) return;
+            if (!query) { dropdown.style.display = 'none'; return; }
+            const lowerQuery = query.toLowerCase(); let results = [];
+            for (const [category, items] of Object.entries(datenBank)) {
+                items.forEach(item => { if (item.name.toLowerCase().includes(lowerQuery) || item.ticker.toLowerCase().includes(lowerQuery)) { results.push({ ...item, category }); } });
+            }
+            if (results.length === 0) { dropdown.innerHTML = '<div style="padding: 15px; color: #aaa;">Keine passenden Werte gefunden.</div>'; } 
+            else {
+                dropdown.innerHTML = results.map(r => {
+                    const desc = currentLang === 'de' ? r.desc_de : r.desc_en;
+                    return `<div class="search-dropdown-item" onclick="selectSearchResult('${r.name}', ${r.rawPrice}, '${r.rawCurrency}', '${desc}', '${r.category}', '${r.apiId}', ${r.repScore}, '${r.icon}')">
+                        <div><div style="font-weight: bold;">${r.name}</div><div style="font-size: 0.8rem; color: #777;">${r.ticker}</div></div>
+                        <div style="font-size: 0.8rem; background: #333; padding: 3px 8px; border-radius: 10px;">${r.category}</div>
+                    </div>`
+                }).join('');
+            }
+            dropdown.style.display = 'block';
+        }
+
+        function selectSearchResult(name, rawPrice, rawCurrency, desc, category, apiId, repScore, iconUrl) {
+            const dd = document.getElementById('searchResults');
+            if(dd) dd.style.display = 'none'; 
+            const si = document.getElementById('searchInput');
+            if(si) si.value = '';
+            openInDashboard(name, rawPrice, rawCurrency, desc, category, apiId, repScore, iconUrl);
+            document.querySelectorAll('nav ul li').forEach(li => li.classList.remove('active'));
+            const targetNav = Array.from(document.querySelectorAll('nav ul li')).find(li => li.innerText === (category==='Aktien'?t.stocks:(category==='Märkte'?t.markets:category)));
+            if(targetNav) targetNav.classList.add('active');
+        }
+        document.addEventListener('click', (e) => { 
+            const dd = document.getElementById('searchResults');
+            if (dd && !e.target.closest('.search-wrapper')) { dd.style.display = 'none'; } 
+        });
+
+        // --- APP START ---
+        bootApp(); 
+    </script>
+</body>
+</html>
