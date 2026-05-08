@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -47,8 +48,8 @@
         nav ul li { cursor: pointer; padding: 8px 18px; border: 1px solid #333; border-radius: 20px; transition: all 0.3s; font-size: 0.95rem; }
         nav ul li:hover, nav ul li.active { background-color: var(--text-color); color: var(--bg-color); font-weight: bold; border-color: var(--text-color); }
         
-        .nav-premium { border-color: var(--accent-gold) !important; color: var(--accent-gold); display: flex; align-items: center; gap: 5px; }
-        .nav-premium:hover, .nav-premium.active { background-color: var(--accent-gold) !important; color: var(--bg-color) !important; box-shadow: 0 0 15px rgba(204, 163, 0, 0.4); }
+        .nav-premium { border-color: var(--accent-green) !important; color: var(--accent-green); display: flex; align-items: center; gap: 5px; }
+        .nav-premium:hover, .nav-premium.active { background-color: var(--accent-green) !important; color: var(--bg-color) !important; box-shadow: 0 0 15px rgba(0, 255, 136, 0.3); }
         .nav-premium svg { width: 14px; height: 14px; stroke: currentColor; }
 
         .nav-separator { width: 1px; height: 35px; background-color: #333; margin: 0 5px; }
@@ -98,6 +99,21 @@
         .price-disclaimer { font-size: 0.7rem; color: var(--text-muted); margin-top: 5px; font-style: italic; }
 
         .chart-wrapper { flex: 1; position: relative; width: 100%; min-height: 350px; background: #0c0c0c; border: 1px solid #222; border-radius: 15px; padding: 20px; box-shadow: inset 0 5px 20px rgba(0,0,0,0.6); display: flex; flex-direction: column; }
+        @keyframes chartPulse {
+            0%   { opacity: 0; }
+            20%  { opacity: 1; }
+            100% { opacity: 0; }
+        }
+        .chart-wrapper.chart-pulse .chart-container::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: rgba(255,255,255,0.055);
+            border-radius: 6px;
+            pointer-events: none;
+            animation: chartPulse 0.9s ease-out forwards;
+            z-index: 5;
+        }
         .chart-container { flex: 1; position: relative; width: 100%; }
 
         #api-warning { display: none; position: absolute; top: 10px; right: 10px; font-size: 0.75rem; color: var(--accent-red); border: 1px solid var(--accent-red); padding: 4px 10px; border-radius: 6px; background: rgba(0,0,0,0.85); font-weight: bold; z-index: 10; letter-spacing: 0.5px;}
@@ -118,13 +134,24 @@
 
         #asset-description { margin-top: 25px; padding: 20px; background: rgba(255,255,255,0.02); border-radius: 12px; border: 1px solid #222; font-size: 0.95rem; color: #aaa; line-height: 1.6; }
 
-        /* --- KAUFANALYSE --- */
-        .analysis-wrapper { margin-top: 15px; border: 1px solid #333; border-radius: 12px; background: #0c0c0c; overflow: hidden; }
-        .analysis-header { padding: 15px 20px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; background: linear-gradient(90deg, rgba(255,255,255,0.05) 0%, transparent 100%); transition: 0.3s; }
-        .analysis-header:hover { background: rgba(255,255,255,0.1); }
-        .analysis-title { font-weight: 600; font-size: 1.05rem; color: #fff; display: flex; align-items: center; gap: 10px; }
-        .analysis-title svg { width: 18px; height: 18px; stroke: var(--text-color); }
-        .analysis-icon { transition: transform 0.3s; font-size: 0.8rem; }
+        /* --- KI-KURSANALYSE --- */
+        @keyframes borderPulse {
+            0%, 100% { box-shadow: 0 0 8px rgba(0,255,136,0.25), inset 0 0 8px rgba(0,255,136,0.04); border-color: rgba(0,255,136,0.45); }
+            50%       { box-shadow: 0 0 20px rgba(0,255,136,0.5), inset 0 0 14px rgba(0,255,136,0.08); border-color: rgba(0,255,136,0.8); }
+        }
+        @keyframes arrowBounce {
+            0%, 100% { transform: translateY(0); }
+            50%       { transform: translateY(4px); }
+        }
+        .analysis-wrapper { margin-top: 15px; border: 1px solid rgba(0,255,136,0.45); border-radius: 12px; background: #0c0c0c; overflow: hidden; animation: borderPulse 2.5s ease-in-out infinite; }
+        .analysis-header { padding: 18px 22px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; background: linear-gradient(90deg, rgba(0,255,136,0.07) 0%, transparent 60%); transition: background 0.3s; user-select: none; }
+        .analysis-header:hover { background: rgba(0,255,136,0.12); }
+        .analysis-title { font-weight: 700; font-size: 1.08rem; color: var(--accent-green); display: flex; align-items: center; gap: 10px; }
+        .analysis-title svg { width: 18px; height: 18px; stroke: var(--accent-green); }
+        .analysis-open-hint { font-size: 0.75rem; color: #00cc77; background: rgba(0,255,136,0.08); border: 1px solid rgba(0,255,136,0.2); border-radius: 20px; padding: 3px 12px; letter-spacing: 0.4px; }
+        .analysis-icon-wrap { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+        .analysis-icon { transition: transform 0.35s; font-size: 1.1rem; color: var(--accent-green); animation: arrowBounce 1.4s ease-in-out infinite; }
+        .analysis-icon.open { animation: none; transform: rotate(180deg); }
         .analysis-content { max-height: 0; opacity: 0; transition: max-height 0.6s ease, opacity 0.6s ease; border-top: 1px solid transparent; }
         .analysis-content.open { max-height: 600px; opacity: 1; border-top-color: #222; }
         
@@ -599,7 +626,40 @@
         }
         .footer-legal-links a:hover { color: #aaa; }
 
-        /* --- KAUFANALYSE LOGIN-SPERRE --- */
+        /* --- REGISTRIERUNGS-MODAL --- */
+        .reg-modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.92); backdrop-filter: blur(12px); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
+        .reg-modal-overlay.active { display: flex; }
+        .reg-modal-box { background: linear-gradient(160deg, #131313, #0e0e0e); border: 1px solid #252525; border-radius: 22px; padding: 48px 44px; max-width: 490px; width: 100%; position: relative; box-shadow: 0 30px 80px rgba(0,0,0,0.8); }
+        .reg-step { display: none; }
+        .reg-step.active { display: block; animation: fadeIn 0.35s ease; }
+        .reg-logo { font-family: 'Orbitron', sans-serif; font-size: 1.2rem; color: #fff; margin-bottom: 4px; display: flex; align-items: center; gap: 8px; }
+        .reg-logo svg { stroke: var(--accent-green); width: 22px; height: 22px; }
+        .reg-title { font-size: 1.6rem; color: #fff; font-weight: 700; margin: 18px 0 8px; }
+        .reg-sub { font-size: 0.87rem; color: #666; line-height: 1.65; margin-bottom: 26px; }
+        .reg-form-group { margin-bottom: 16px; }
+        .reg-label { font-size: 0.75rem; color: #555; text-transform: uppercase; letter-spacing: 0.9px; margin-bottom: 6px; display: block; }
+        .reg-input { width: 100%; background: #080808; border: 1px solid #1e1e1e; border-radius: 10px; padding: 13px 16px; color: #fff; font-size: 0.95rem; outline: none; transition: 0.3s; }
+        .reg-input:focus { border-color: rgba(0,255,136,0.5); box-shadow: 0 0 0 3px rgba(0,255,136,0.06); }
+        .reg-input::placeholder { color: #333; }
+        .reg-newsletter-note { display: flex; align-items: flex-start; gap: 11px; background: rgba(0,255,136,0.04); border: 1px solid rgba(0,255,136,0.12); border-radius: 10px; padding: 14px 16px; margin: 20px 0 22px; font-size: 0.81rem; color: #777; line-height: 1.65; }
+        .reg-newsletter-note svg { flex-shrink: 0; stroke: var(--accent-green); width: 16px; height: 16px; margin-top: 2px; }
+        .reg-btn { width: 100%; padding: 14px; background: var(--accent-green); border: none; border-radius: 10px; color: #000; font-weight: 800; font-size: 0.97rem; cursor: pointer; transition: 0.25s; letter-spacing: 0.3px; }
+        .reg-btn:hover { background: #00e07a; transform: translateY(-1px); box-shadow: 0 8px 24px rgba(0,255,136,0.25); }
+        .reg-btn:disabled { background: #1a1a1a; color: #444; cursor: not-allowed; transform: none; box-shadow: none; }
+        .reg-close { position: absolute; top: 18px; right: 20px; background: transparent; border: none; color: #444; font-size: 1.5rem; cursor: pointer; line-height: 1; transition: 0.2s; }
+        .reg-close:hover { color: #aaa; }
+        .reg-privacy { font-size: 0.73rem; color: #333; text-align: center; margin-top: 14px; line-height: 1.6; }
+        .reg-privacy a { color: #555; text-decoration: underline; }
+        .reg-confirm-center { text-align: center; padding: 10px 0; }
+        .reg-confirm-icon-wrap { width: 72px; height: 72px; background: rgba(0,255,136,0.08); border: 1px solid rgba(0,255,136,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 22px; }
+        .reg-confirm-icon-wrap svg { width: 32px; height: 32px; stroke: var(--accent-green); }
+        .reg-email-display { display: inline-block; background: #0c0c0c; border: 1px solid #222; border-radius: 8px; padding: 6px 14px; font-size: 0.87rem; color: #aaa; margin: 8px 0 20px; font-family: monospace; }
+        .reg-features-list { display: flex; flex-direction: column; gap: 10px; margin: 22px 0; }
+        .reg-feature-item { display: flex; align-items: center; gap: 10px; font-size: 0.85rem; color: #888; }
+        .reg-feature-item svg { width: 15px; height: 15px; stroke: var(--accent-green); flex-shrink: 0; }
+        .reg-error { font-size: 0.8rem; color: var(--accent-red); margin-top: 6px; display: none; }
+
+        /* --- KI-KURSANALYSE LOGIN-SPERRE --- */
         .analysis-login-wall {
             padding: 20px; text-align: center;
             border-top: 1px solid #222;
@@ -615,6 +675,49 @@
             cursor: pointer; font-size: 0.92rem; transition: 0.2s;
         }
         .analysis-login-btn:hover { background: #00cc77; }
+
+        /* --- AKTUELLE TRENDS SEKTION --- */
+        #trend-section { margin-bottom: 0; }
+        .trend-section-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+        .trend-section-header h2 { font-size: 0.78rem; font-weight: 500; color: var(--text-muted); letter-spacing: 0.8px; text-transform: uppercase; margin: 0; }
+        .trend-live-badge { display: flex; align-items: center; gap: 5px; font-size: 0.65rem; color: var(--accent-green); font-weight: 700; letter-spacing: 1px; }
+        .trend-live-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent-green); display: inline-block; animation: pulseDot 1.5s ease-in-out infinite; }
+        @keyframes pulseDot { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.35; transform: scale(0.65); } }
+        .trend-card { border-radius: 10px; padding: 14px 18px; border: 1px solid rgba(255,255,255,0.07); background: rgba(255,255,255,0.02); }
+        .trend-card-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+        .trend-card-live { display: flex; align-items: center; gap: 5px; font-size: 0.65rem; font-weight: 600; letter-spacing: 1px; color: var(--text-muted); }
+        .trend-dot-up { width: 6px; height: 6px; border-radius: 50%; background: var(--accent-green); animation: pulseDot 1.5s ease-in-out infinite; display: inline-block; }
+        .trend-dot-down { width: 6px; height: 6px; border-radius: 50%; background: #e05555; animation: pulseDot 1.5s ease-in-out infinite; display: inline-block; }
+        .trend-card-time { font-size: 0.72rem; color: var(--text-muted); }
+        .trend-card-title { font-size: 0.95rem; font-weight: 600; margin-bottom: 2px; color: #ddd; }
+        .trend-card-up .trend-card-title { color: #9ef5c9; }
+        .trend-card-down .trend-card-title { color: #f09090; }
+        .trend-card-subtitle { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 12px; }
+        .trend-card-assets { display: flex; flex-wrap: wrap; gap: 6px; }
+        .trend-asset-row { display: flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.025); border: 1px solid rgba(255,255,255,0.05); border-radius: 6px; padding: 4px 10px; }
+        .trend-asset-name { font-size: 0.78rem; color: #aaa; }
+        .trend-asset-ticker { font-size: 0.68rem; color: var(--text-muted); }
+        .trend-asset-change { font-size: 0.78rem; font-weight: 600; }
+        .trend-pos { color: var(--accent-green); }
+        .trend-neg { color: #e07070; }
+        .trend-archive-label { font-size: 0.65rem; color: var(--text-muted); letter-spacing: 0.8px; text-transform: uppercase; margin: 12px 0 6px; opacity: 0.6; }
+        .trend-archive-row { border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); background: rgba(255,255,255,0.015); margin-bottom: 5px; overflow: hidden; }
+        .trend-arc-main { display: flex; align-items: center; gap: 10px; padding: 7px 12px; cursor: pointer; }
+        .trend-arc-main:hover { background: rgba(255,255,255,0.03); }
+        .trend-archive-up .trend-arc-icon { color: var(--accent-green); opacity: 0.8; }
+        .trend-archive-down .trend-arc-icon { color: #e07070; opacity: 0.8; }
+        .trend-arc-icon { font-size: 0.75rem; width: 13px; text-align: center; flex-shrink: 0; }
+        .trend-arc-text { flex: 1; font-size: 0.78rem; color: var(--text-muted); }
+        .trend-arc-dur { font-size: 0.68rem; font-family: 'Orbitron', sans-serif; flex-shrink: 0; }
+        .trend-arc-up-dur { color: var(--accent-green); opacity: 0.75; }
+        .trend-arc-down-dur { color: #e07070; opacity: 0.75; }
+        .trend-arc-time { font-size: 0.66rem; color: var(--text-muted); opacity: 0.6; flex-shrink: 0; }
+        .trend-arc-toggle { font-size: 0.65rem; color: var(--text-muted); flex-shrink: 0; }
+        .trend-arc-detail { display: none; padding: 0 12px 9px 35px; }
+        .trend-arc-detail.open { display: block; }
+        .trend-arc-chips { display: flex; flex-wrap: wrap; gap: 5px; }
+        .trend-arc-chip { font-size: 0.7rem; padding: 2px 8px; border-radius: 4px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); }
+        @media (max-width: 600px) { .trend-card-assets { gap: 4px; } .trend-card { padding: 12px 14px; } .trend-arc-time { display: none; } }
 
     </style>
 </head>
@@ -637,7 +740,7 @@
     <div id="auth-banner">
         <div class="auth-banner-text">
             <strong>Jetzt kostenlos registrieren und alle Funktionen nutzen!</strong>
-            <span>Schalte Kaufanalysen und mehr frei – RisingStar ist dauerhaft kostenlos.</span>
+            <span>Schalte die KI-Kursanalyse frei & erhalte unseren kostenlosen Newsletter.</span>
         </div>
         <div class="auth-banner-actions">
             <button class="auth-btn-register" onclick="openModal()">Anmelden / Registrieren</button>
@@ -663,15 +766,16 @@
             <ul>
                 <li onclick="switchNav('Aktien', this)" id="nav-stocks">Aktien</li>
                 <li onclick="switchNav('Crypto', this)" id="nav-crypto">Crypto</li>
-                <li onclick="switchNav('Märkte', this)" id="nav-markets">Märkte</li>
+                <li onclick="switchNav('ETF', this)" id="nav-markets">ETF</li>
+                <li onclick="switchNav('Rohstoffe', this)" id="nav-rohstoffe">Rohstoffe</li>
                 <li onclick="alert(t.brokerAlert)" id="nav-broker">Broker</li>
                 <li onclick="openMoreView(this)" id="nav-more">Mehr</li>
                 <li class="nav-separator"></li>
-                <li class="nav-premium" onclick="openPremiumView()" id="nav-premium">
+                <li class="nav-premium" onclick="isLoggedIn ? openPremiumView() : openModal()" id="nav-premium">
                     <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle>
                     </svg>
-                    RiseSoon+ Picks
+                    <span id="nav-register-text">Anmelden / Registrieren</span>
                 </li>
             </ul>
             <div class="nav-separator"></div>
@@ -695,8 +799,8 @@
             </div>
             <div class="fx-rates-container">
                 <div class="fx-rate-item">1 EUR = <span class="fx-rate" id="fx-eur">1.0845</span> USD</div>
-                <div class="fx-rate-item">1 GBP = <span class="fx-rate" id="fx-gbp">1.2630</span> USD</div>
-                <div class="fx-rate-item">1 AUD = <span class="fx-rate" id="fx-aud">0.6520</span> USD</div>
+                <div class="fx-rate-item">1 EUR = <span class="fx-rate" id="fx-gbp">0.8550</span> GBP</div>
+                <div class="fx-rate-item">1 EUR = <span class="fx-rate" id="fx-aud">1.7210</span> AUD</div>
             </div>
         </div>
 
@@ -705,7 +809,7 @@
                 <section class="chart-section">
                     <div class="asset-header">
                         <div class="asset-title" id="current-asset-name">
-                            <img src="https://ui-avatars.com/api/?name=DAX&background=00ff88&color=000&rounded=true" class="item-icon large" alt="Icon"> 
+                            <img src="https://financialmodelingprep.com/image-stock/EXS1.DE.png" class="item-icon large" alt="Icon"> 
                             DAX
                         </div>
                         <div class="price-container">
@@ -714,8 +818,8 @@
                             <div class="price-row">
                                 <div class="asset-price" id="current-asset-price">18.530,09 EUR</div>
                                 <div class="currency-toggle">
-                                    <button id="curr-usd" class="active" onclick="setCurrency('USD')">USD</button>
-                                    <button id="curr-eur" onclick="setCurrency('EUR')">EUR</button>
+                                    <button id="curr-usd" onclick="setCurrency('USD')">USD</button>
+                                    <button id="curr-eur" class="active" onclick="setCurrency('EUR')">EUR</button>
                                 </div>
                             </div>
                             <div class="price-disclaimer" id="price-disclaimer-text">*Daten können um bis zu 15 Min. verzögert sein. Keine Gewähr.</div>
@@ -760,7 +864,8 @@
                         <div class="analysis-header" onclick="toggleAnalysis()">
                             <span class="analysis-title" id="analysis-title-text">
                                 <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
-                                Kaufanalyse (KI-gestützt)
+                                KI-Kursanalyse
+                                <span class="analysis-open-hint" id="analysis-open-hint">▸ Jetzt öffnen</span>
                             </span>
                             <span class="analysis-icon" id="analysis-icon">▼</span>
                         </div>
@@ -768,7 +873,7 @@
                         <div class="analysis-login-wall" id="analysis-login-wall" style="display:none;">
                             <button class="analysis-login-btn" onclick="openModal()">Jetzt anmelden &amp; Analyse freischalten</button>
                             <div class="analysis-login-disclaimer">
-                                <strong>Anmeldung erforderlich:</strong> Um die KI-gestützte Kaufanalyse zu nutzen, musst du dich kostenlos registrieren oder anmelden. RisingStar ist dauerhaft gratis.
+                                <strong>Anmeldung erforderlich:</strong> Um die KI-Kursanalyse zu nutzen, registriere dich kostenlos. Dauerhaft gratis, inklusive täglichem Newsletter.
                             </div>
                         </div>
                         <div class="analysis-content" id="analysis-content">
@@ -814,6 +919,16 @@
                     <div id="top-list-container"></div>
                 </aside>
             </div>
+
+            <!-- AKTUELLE TRENDS SEKTION -->
+            <section id="trend-section" style="display:none;">
+                <div class="trend-section-header">
+                    <span class="trend-live-badge"><span class="trend-live-dot"></span>LIVE</span>
+                    <h2>Aktuelle Markt-Trends</h2>
+                </div>
+                <div id="trend-current"></div>
+                <div id="trend-archive"></div>
+            </section>
 
             <!-- INFO SEKTION -->
             <section class="info-section">
@@ -881,28 +996,28 @@
                         <div class="tm-ai-badge"><div class="tm-ai-badge-dot"></div>KI-Analyse Aktiv</div>
                         <div class="tm-stat-cards" id="top-mover-list">
                             <div class="tm-stat-card">
-                                <div class="tm-stat-icon ic-green">📈</div>
+                                <div class="tm-stat-icon ic-green"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg></div>
                                 <div class="tm-stat-body">
                                     <div class="tm-stat-label" id="tm-mov-label">Performance (7 Tage)</div>
                                     <div class="tm-stat-value positive" id="tm-perf-val">--</div>
                                 </div>
                             </div>
                             <div class="tm-stat-card">
-                                <div class="tm-stat-icon ic-blue">⚡</div>
+                                <div class="tm-stat-icon ic-blue"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#008cff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg></div>
                                 <div class="tm-stat-body">
                                     <div class="tm-stat-label" id="tm-trig-label">Katalysator</div>
                                     <div class="tm-stat-value tm-trig" id="tm-trig-val">--</div>
                                 </div>
                             </div>
                             <div class="tm-stat-card">
-                                <div class="tm-stat-icon ic-orange">🔥</div>
+                                <div class="tm-stat-icon ic-orange"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#ffa000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg></div>
                                 <div class="tm-stat-body">
                                     <div class="tm-stat-label" id="tm-vol-label">Rel. Volumen</div>
                                     <div class="tm-stat-value" id="tm-vol-val">--</div>
                                 </div>
                             </div>
                             <div class="tm-stat-card">
-                                <div class="tm-stat-icon ic-purple">⏱</div>
+                                <div class="tm-stat-icon ic-purple"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#a05aff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg></div>
                                 <div class="tm-stat-body">
                                     <div class="tm-stat-label" id="tm-scan-label">Nächste Analyse</div>
                                     <div class="tm-stat-value" id="tm-scan-val" style="font-size:0.8rem;">--</div>
@@ -944,7 +1059,7 @@
                             <strong>Kritisches Risiko:</strong> Bei stark gehebelten Positionen kann ein einziger Kursrückgang von wenigen Prozent zum <strong>Totalverlust des eingesetzten Kapitals</strong> führen. Viele Broker bieten Nachschusspflicht — du kannst mehr verlieren, als du eingesetzt hast.
                         </div>
                         <ul class="mehr-list">
-                            <li>Hebel für Einsteiger: max. 2:1 bis 5:1 empfohlen</li>
+                            <li>Hebel für Einsteiger: Häufig genutzte Limits liegen zwischen 2:1 und 5:1 (informativ, keine Empfehlung)</li>
                             <li>Stop-Loss immer setzen — ohne Ausnahme</li>
                             <li>Nie mehr riskieren als 1–2% des Gesamtkapitals pro Trade</li>
                             <li>Hebel-CFDs auf Krypto: bis zu 100:1 möglich — extrem gefährlich</li>
@@ -964,7 +1079,7 @@
                             <li><strong>Handelszeiten:</strong> US-Börsen: 15:30–22:00 Uhr MEZ</li>
                             <li><strong>Volatilität:</strong> Earnings-Berichte, News und Makrodaten können Kurse stark bewegen</li>
                             <li><strong>Diversifikation:</strong> Nicht alles auf eine Karte — ETFs helfen dabei</li>
-                            <li><strong>Langfrist-Strategie:</strong> Buy & Hold schlägt kurzfristiges Trading statistisch in 80% der Fälle</li>
+                            <li><strong>Langfrist-Perspektive:</strong> Studien zeigen, dass Buy-&-Hold-Ansätze kurzfristiges Trading in vielen Marktphasen statistisch übertreffen</li>
                         </ul>
                     </div>
 
@@ -1097,7 +1212,7 @@
                 <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
                 RiseSoon+ Top Picks (KI-Analyse)
             </div>
-            <p style="color:#aaa; margin-top:-15px; margin-bottom:30px;">Die exklusiven Top-Kaufempfehlungen unseres Algorithmus, basierend auf Momentum, Fundamentaldaten und Charttechnik.</p>
+            <p style="color:#aaa; margin-top:-15px; margin-bottom:30px;">Die Top-Analysen unseres Algorithmus, basierend auf Momentum, Fundamentaldaten und Charttechnik — rein informativ, keine Handelsempfehlung.</p>
             <div id="premium-table-container"></div>
         </div>
 
@@ -1129,55 +1244,83 @@
         <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
     </div>
 
-    <!-- PRICING MODAL -->
-    <div class="modal-overlay" id="pricingModal">
-        <div class="modal-content">
-            <button class="close-modal" onclick="closeModal()">×</button>
-            <div class="pricing-grid">
-                
-                <!-- TIER 1 -->
-                <div class="pricing-card">
-                    <div class="tier-name">RisingStar</div>
-                    <div class="tier-price">0.00 € <span style="font-size:1rem; color:#888;">/ Mo.</span></div>
-                    <div class="tier-sub">Für Einsteiger. Kostenlos.</div>
-                    <button class="tier-btn" onclick="registerFree()">Kostenlos Registrieren</button>
-                    <ul class="tier-features">
-                        <li><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"></polyline></svg> Basis Charts & Live-Kurse</li>
-                        <li><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"></polyline></svg> Wöchentlicher Top Mover</li>
-                        <li class="missing"><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg> RiseSoon+ Top Picks Tabelle</li>
-                        <li class="missing"><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg> Werbefreies Erlebnis (Demnächst)</li>
-                        <li><span style="color:#888; font-size:0.8rem; font-style:italic;">Erfordert Registrierung (Name, Adresse, E-Mail, Tel, Passwort)</span></li>
-                    </ul>
+    <!-- REGISTRIERUNGS-MODAL (Double-Opt-In) -->
+    <div class="reg-modal-overlay" id="regModal">
+        <div class="reg-modal-box">
+            <button class="reg-close" onclick="closeModal()">×</button>
+
+            <!-- SCHRITT 1: FORMULAR -->
+            <div class="reg-step active" id="reg-step-1">
+                <div class="reg-logo">
+                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline><polyline points="16 7 22 7 22 13"></polyline></svg>
+                    RiseSoon
+                </div>
+                <div class="reg-title">Kostenlos registrieren</div>
+                <div class="reg-sub">Erhalte Zugang zur KI-Kursanalyse und werde Teil unserer Trading-Community — dauerhaft gratis.</div>
+
+                <div class="reg-features-list">
+                    <div class="reg-feature-item"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"></polyline></svg> Vollzugriff auf alle Charts & Live-Kurse</div>
+                    <div class="reg-feature-item"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"></polyline></svg> KI-Kursanalyse für jede Aktie & Crypto</div>
+                    <div class="reg-feature-item"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"></polyline></svg> RiseSoon+ Top Picks & Top Mover</div>
+                    <div class="reg-feature-item"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"></polyline></svg> Täglicher KI-Newsletter (2× täglich)</div>
                 </div>
 
-                <!-- TIER 2 -->
-                <div class="pricing-card popular">
-                    <div class="tier-name">RisingGiant</div>
-                    <div class="tier-price">4,90 € <span style="font-size:1rem; color:#888;">/ Mo.</span></div>
-                    <div class="tier-sub">Der Trumpf für Trader.</div>
-                    <button class="tier-btn" onclick="subscribePremium()">Jetzt Abonnieren</button>
-                    <ul class="tier-features">
-                        <li><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"></polyline></svg> Alles aus RisingStar</li>
-                        <li><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"></polyline></svg> <strong style="color:#fff;">Zugriff auf RiseSoon+ Picks</strong></li>
-                        <li><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"></polyline></svg> Exzellente KI Analysen</li>
-                        <li><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"></polyline></svg> Tiefgehende Kaufanalyse</li>
-                        <li><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"></polyline></svg> Komplett Werbefrei</li>
-                    </ul>
+                <div class="reg-form-group">
+                    <label class="reg-label" for="reg-name">Vorname</label>
+                    <input type="text" id="reg-name" class="reg-input" placeholder="z.B. Moritz" autocomplete="given-name">
+                    <div class="reg-error" id="err-name">Bitte gib deinen Vornamen ein.</div>
+                </div>
+                <div class="reg-form-group">
+                    <label class="reg-label" for="reg-email">E-Mail-Adresse</label>
+                    <input type="email" id="reg-email" class="reg-input" placeholder="deine@email.de" autocomplete="email">
+                    <div class="reg-error" id="err-email">Bitte gib eine gültige E-Mail-Adresse ein.</div>
                 </div>
 
-                <!-- TIER 3 -->
-                <div class="pricing-card">
-                    <div class="tier-name">RisingTitan</div>
-                    <div class="tier-price">30,90 € <span style="font-size:1rem; color:#888;">/ Mo.</span></div>
-                    <div class="tier-sub">Für institutionelle Kunden.</div>
-                    <button class="tier-btn" onclick="alert('Das Kontaktformular für das Sales-Team wird geöffnet...')">Anfragen</button>
-                    <ul class="tier-features">
-                        <li><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"></polyline></svg> Direkter API-Zugang</li>
-                        <li><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"></polyline></svg> OTC & Darkpool Daten</li>
-                        <li><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"></polyline></svg> Persönlicher VIP Support</li>
-                    </ul>
+                <div class="reg-newsletter-note">
+                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                    <span>Mit der Registrierung abonnierst du automatisch unseren <strong style="color:#aaa;">kostenlosen KI-Newsletter</strong>. Du erhältst 2× täglich eine E-Mail mit dem Markt-Highlight des Tages — rein informativ, keine Kaufempfehlungen. Abmeldung jederzeit möglich.</span>
                 </div>
 
+                <button class="reg-btn" onclick="submitRegistration()">Jetzt registrieren & Newsletter aktivieren</button>
+                <div class="reg-privacy">Mit der Registrierung stimmst du unserer <a href="#" onclick="openDatenschutz(); return false;">Datenschutzerklärung</a> zu. Es gilt das Double-Opt-In-Verfahren gemäß DSGVO.</div>
+            </div>
+
+            <!-- SCHRITT 2: BESTÄTIGUNG AUSSTEHEND -->
+            <div class="reg-step" id="reg-step-2">
+                <div class="reg-confirm-center">
+                    <div class="reg-confirm-icon-wrap">
+                        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                    </div>
+                    <div class="reg-title" style="text-align:center;">Bestätige deine E-Mail</div>
+                    <div class="reg-sub" style="text-align:center;">Wir haben eine Bestätigungs-E-Mail an:</div>
+                    <div class="reg-email-display" id="reg-email-display">—</div>
+                    <div class="reg-sub" style="text-align:center; margin-bottom:0;">gesendet. Bitte klicke auf den <strong style="color:#ccc;">Bestätigungslink</strong> in der E-Mail, um deine Registrierung & deinen Newsletter abzuschließen.</div>
+
+                    <div style="margin-top:28px; padding:16px; background:rgba(255,255,255,0.02); border:1px solid #1e1e1e; border-radius:12px; font-size:0.8rem; color:#555; text-align:left; line-height:1.7;">
+                        <strong style="color:#777;">Keine E-Mail erhalten?</strong><br>
+                        Prüfe deinen Spam-Ordner. Die E-Mail kommt von <em>newsletter@risesoon.de</em>. Falls du weiterhin keine E-Mail bekommst, starte den Vorgang erneut.
+                    </div>
+
+                    <button class="reg-btn" style="margin-top:28px; background:transparent; border:1px solid #333; color:#aaa; font-weight:600;" onclick="closeModal()">Fenster schließen</button>
+                </div>
+            </div>
+
+            <!-- SCHRITT 3: ERFOLGREICH BESTÄTIGT -->
+            <div class="reg-step" id="reg-step-3">
+                <div class="reg-confirm-center">
+                    <div class="reg-confirm-icon-wrap" style="background:rgba(0,255,136,0.1); border-color:rgba(0,255,136,0.3);">
+                        <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    </div>
+                    <div class="reg-title" style="text-align:center; color:var(--accent-green);">Willkommen bei RiseSoon!</div>
+                    <div class="reg-sub" style="text-align:center;">Deine E-Mail wurde bestätigt. Du hast jetzt vollen Zugriff auf alle Features.</div>
+
+                    <div style="background:rgba(0,255,136,0.04); border:1px solid rgba(0,255,136,0.12); border-radius:12px; padding:20px; margin:24px 0; text-align:left;">
+                        <div style="font-size:0.8rem; color:#00ff88; text-transform:uppercase; letter-spacing:1px; margin-bottom:10px; font-weight:700;">Dein Newsletter ist aktiv</div>
+                        <div style="font-size:0.85rem; color:#888; line-height:1.7;">Du erhältst ab sofort <strong style="color:#ccc;">2× täglich</strong> deinen persönlichen KI-Kursanalyse-Report — morgens und abends, direkt in dein Postfach.</div>
+                    </div>
+
+                    <button class="reg-btn" onclick="completeRegistration()">Zum Dashboard →</button>
+                </div>
             </div>
         </div>
     </div>
@@ -1268,12 +1411,14 @@
         function acceptCookies() {
             document.getElementById('cookie-banner').style.display = 'none';
             document.getElementById('auth-banner').style.display = 'flex';
+            document.getElementById('main-content').style.paddingBottom = '80px';
         }
         function declineCookies() {
             document.getElementById('cookie-banner').style.display = 'none';
         }
         function closeAuthBanner() {
             document.getElementById('auth-banner').style.display = 'none';
+            document.getElementById('main-content').style.paddingBottom = '';
         }
 
         // --- IMPRESSUM / DATENSCHUTZ MODALS ---
@@ -1289,9 +1434,10 @@
         });
 
         let myChart;
-        let topMoverChart; 
-        const ctx = document.getElementById('mainChart').getContext('2d');
-        const ctxMover = document.getElementById('topMoverChart').getContext('2d');
+        let topMoverChart;
+        const _dpr = Math.max(window.devicePixelRatio || 1, 2);
+        const ctx = document.getElementById('mainChart').getContext('2d', { alpha: false });
+        const ctxMover = document.getElementById('topMoverChart').getContext('2d', { alpha: false });
         
         let currentApiId = null;
         let currentCategory = 'Aktien'; 
@@ -1299,12 +1445,21 @@
         let currentRawPrice = 0;
         let currentRawCurrency = 'USD';
 
-        let currentCurrency = 'USD';
+        let currentCurrency = 'EUR';
         let eurUsdRate = 1.0850; 
         let gbpUsdRate = 1.2630;
         let audUsdRate = 0.6520;
         const defaultExchangeRates = { eurUsd: eurUsdRate, gbpUsd: gbpUsdRate, audUsd: audUsdRate };
         let fxRateLoaded = false;
+
+        function pulseChart() {
+            const w = document.querySelector('.chart-wrapper');
+            if (!w) return;
+            w.classList.remove('chart-pulse');
+            void w.offsetWidth; // reflow damit Animation neu startet
+            w.classList.add('chart-pulse');
+            w.addEventListener('animationend', () => w.classList.remove('chart-pulse'), { once: true });
+        }
 
         function convertCurrency(amount, fromCurrency, toCurrency) {
             if(fromCurrency === toCurrency || amount === null || amount === undefined || isNaN(amount)) return amount;
@@ -1325,7 +1480,8 @@
         let currentLang = 'de';
         const translations = {
             'de': {
-                search: 'Suchen (z.B. Apple, BTC)...', stocks: 'Aktien', crypto: 'Crypto', markets: 'Märkte', broker: 'Broker', more: 'Mehr',
+                search: 'Suchen (z.B. Apple, BTC)...', stocks: 'Aktien', crypto: 'Crypto', markets: 'ETF', commodities: 'Rohstoffe', broker: 'Broker', more: 'Mehr',
+                loginRegister: 'Anmelden / Registrieren', myAccount: 'Mein Konto', openNow: '▸ Jetzt öffnen', aiActive: 'KI-Analyse Aktiv', priceLabel: 'Kurs:', trendUp: 'AUFWÄRTS', trendDown: 'ABWÄRTS', loginWallBtn: 'Jetzt anmelden & Analyse freischalten', loginWallText: '<strong>Anmeldung erforderlich:</strong> Um die KI-Kursanalyse zu nutzen, registriere dich kostenlos. Dauerhaft gratis, inklusive täglichem Newsletter.',
                 currentPrice: 'Aktueller Preis:', patternDetected: 'Chartmuster:',
                 patternDescLong: 'Eine grüne Trendlinie wurde eingezeichnet, die auf einen potenziellen Anstieg hindeutet.',
                 patternDescShort: 'Eine rote Trendlinie wurde eingezeichnet, die auf einen potenziellen Kursfall hindeutet.',
@@ -1338,7 +1494,7 @@
                 tmMov: 'Performance (7 Tage):', tmTrig: 'Katalysator:', tmTrigVal: 'Netzwerk-Protokoll Update', tmVol: 'Rel. Volumen:', tmVolVal: '340% über Ø', tmScan: 'Nächste Analyse in:',
                 tmAnalysisText: 'Der Momentum-Ausbruch wurde durch stark erhöhtes Handelsvolumen bestätigt.',
                 footerDesc: 'Next-Gen Marktanalyse. Präzise, algorithmisch, demokratisiert.',
-                anTitle: 'Kaufanalyse (KI-gestützt)', anNews: 'Analysten-Konsens (News)', anChart: 'Tech. Setup (Chartmuster)', anRep: 'Fundamentale Stabilität', anRsi: 'RSI (Relative Stärke)', anVol: 'Volatilität (30 Tage)', anMacd: 'MACD Signal', anBuy: 'Kaufen', anSell: 'Verkaufen',
+                anTitle: 'KI-Kursanalyse', anNews: 'Analysten-Konsens (News)', anChart: 'Tech. Setup (Chartmuster)', anRep: 'Fundamentale Stabilität', anRsi: 'RSI (Relative Stärke)', anVol: 'Volatilität (30 Tage)', anMacd: 'MACD Signal', anBuy: 'Aufwärts-Indikator', anSell: 'Abwärts-Indikator',
                 infoTitle: 'Die 1H-Mustererkennungs-Revolution',
                 infoP1: 'Willkommen in der neuen Ära der Marktanalyse. Bisher waren Algorithmen, die Live-Kurse in Millisekunden auswerten und Chartmuster erkennen, teuren Wall-Street-Terminals vorbehalten. <strong>RiseSoon demokratisiert diese Technologie.</strong>',
                 infoP2: '<strong>Die Wahrheit über das Trading:</strong> Keine Software der Welt kann die Zukunft vorhersagen oder Gewinne garantieren. Der wahre Vorteil liegt im <strong>Risikomanagement</strong>.',
@@ -1346,7 +1502,8 @@
                 loadingVal: 'Lädt...'
             },
             'en': {
-                search: 'Search (e.g. Apple, BTC)...', stocks: 'Stocks', crypto: 'Crypto', markets: 'Markets', broker: 'Broker', more: 'More',
+                search: 'Search (e.g. Apple, BTC)...', stocks: 'Stocks', crypto: 'Crypto', markets: 'ETF', commodities: 'Commodities', broker: 'Broker', more: 'More',
+                loginRegister: 'Sign In / Register', myAccount: 'My Account', openNow: '▸ Open Now', aiActive: 'AI Analysis Active', priceLabel: 'Price:', trendUp: 'UPWARD', trendDown: 'DOWNWARD', loginWallBtn: 'Sign in & unlock analysis', loginWallText: '<strong>Login required:</strong> Register for free to access the KI-Kursanalyse. Always free, including daily newsletter.',
                 currentPrice: 'Current Price:', patternDetected: 'Chart pattern:',
                 patternDescLong: 'A green trendline has been drawn, indicating a potential uptrend.',
                 patternDescShort: 'A red trendline has been drawn, indicating a potential downtrend.',
@@ -1359,7 +1516,7 @@
                 tmMov: 'Performance (7 Days):', tmTrig: 'Catalyst:', tmTrigVal: 'Network Protocol Update', tmVol: 'Rel. Volume:', tmVolVal: '340% above Avg', tmScan: 'Next Analysis in:',
                 tmAnalysisText: 'The momentum breakout was confirmed by significantly increased trading volume.',
                 footerDesc: 'Next-Gen Market Analysis. Precise, algorithmic, democratized.',
-                anTitle: 'Buy Analysis (AI-driven)', anNews: 'Analyst Consensus (News)', anChart: 'Tech. Setup (Pattern)', anRep: 'Fundamental Stability', anRsi: 'RSI (Relative Strength)', anVol: 'Volatility (30 Days)', anMacd: 'MACD Signal', anBuy: 'Buy', anSell: 'Sell',
+                anTitle: 'KI-Kursanalyse', anNews: 'Analyst Consensus (News)', anChart: 'Tech. Setup (Pattern)', anRep: 'Fundamental Stability', anRsi: 'RSI (Relative Strength)', anVol: 'Volatility (30 Days)', anMacd: 'MACD Signal', anBuy: 'Bullish Indicator', anSell: 'Bearish Indicator',
                 infoTitle: 'The 1H Pattern Recognition Revolution',
                 infoP1: 'Welcome to the new era of market analysis. Previously, algorithms that evaluate live prices and detect patterns in milliseconds were reserved for expensive Wall Street terminals. <strong>RiseSoon democratizes this technology.</strong>',
                 infoP2: '<strong>The truth about trading:</strong> No software can predict the future or guarantee profits. The real advantage lies in <strong>risk management</strong>.',
@@ -1400,36 +1557,92 @@
                 { name: 'Binance Coin', ticker: 'BNB', apiId: 'binancecoin', icon: 'https://cryptologos.cc/logos/bnb-bnb-logo.png', rawPrice: 0, rawCurrency: 'USD', change: '', repScore: 30, desc_de: 'Der native Coin der weltweit größten Krypto-Börse Binance.', desc_en: 'The native coin of the worlds largest crypto exchange Binance.' },
                 { name: 'Ripple', ticker: 'XRP', apiId: 'ripple', icon: 'https://cryptologos.cc/logos/xrp-xrp-logo.png', rawPrice: 0, rawCurrency: 'USD', change: '', repScore: 22, desc_de: 'Fokus auf schnelle, internationale Banktransfers.', desc_en: 'Focus on fast, international bank transfers.' }
             ],
-            'Märkte': [ 
+            'ETF': [
                 { name: 'S&P 500', ticker: 'VOO', apiId: 'VOO', icon: 'https://financialmodelingprep.com/image-stock/VOO.png', rawPrice: 468.10, rawCurrency: 'USD', change: '+0.4%', repScore: 40, desc_de: 'Bildet die 500 größten US-Unternehmen ab. Der Klassiker.', desc_en: 'Tracks the 500 largest US companies. The classic.' },
                 { name: 'MSCI World', ticker: 'URTH', apiId: 'URTH', icon: 'https://financialmodelingprep.com/image-stock/URTH.png', rawPrice: 135.40, rawCurrency: 'USD', change: '+0.3%', repScore: 39, desc_de: 'Investiert in entwickelte Industrieländer weltweit.', desc_en: 'Invests in developed industrialized countries worldwide.' },
                 { name: 'Nasdaq 100', ticker: 'QQQ', apiId: 'QQQ', icon: 'https://financialmodelingprep.com/image-stock/QQQ.png', rawPrice: 425.80, rawCurrency: 'USD', change: '+0.9%', repScore: 38, desc_de: 'Fokus auf die 100 größten Tech-Unternehmen der USA.', desc_en: 'Focus on the 100 largest tech companies in the US.' },
                 { name: 'Emerging Markets', ticker: 'VWO', apiId: 'VWO', icon: 'https://financialmodelingprep.com/image-stock/VWO.png', rawPrice: 42.15, rawCurrency: 'USD', change: '-0.2%', repScore: 25, desc_de: 'Bildet Aktien aus Schwellenländern wie China, Indien, Brasilien ab.', desc_en: 'Tracks stocks from emerging markets like China, India, Brazil.' },
-                { name: 'DAX ETF', ticker: 'EXS1.DE', apiId: '^GDAXI', icon: 'https://ui-avatars.com/api/?name=DAX&background=00ff88&color=000&rounded=true', rawPrice: 18530.09, rawCurrency: 'EUR', change: '+0.1%', repScore: 36, desc_de: 'Bildet die 40 größten deutschen Unternehmen ab.', desc_en: 'Tracks the 40 largest German companies.' }
+                { name: 'DAX ETF', ticker: 'EXS1.DE', apiId: '^GDAXI', icon: 'https://financialmodelingprep.com/image-stock/EXS1.DE.png', rawPrice: 18530.09, rawCurrency: 'EUR', change: '+0.1%', repScore: 36, desc_de: 'Bildet die 40 größten deutschen Unternehmen ab.', desc_en: 'Tracks the 40 largest German companies.' }
+            ],
+            'Rohstoffe': [
+                { name: 'Gold', ticker: 'XAU/USD', apiId: 'GLD', icon: 'https://financialmodelingprep.com/image-stock/GLD.png', rawPrice: 2320.00, rawCurrency: 'USD', change: '+0.5%', repScore: 38, desc_de: 'Das wichtigste Edelmetall weltweit. Gold gilt als klassischer Inflationsschutz und sicherer Hafen in Krisenzeiten. Preis pro Feinunze (oz).', desc_en: 'The world\'s most important precious metal. Gold is considered a classic inflation hedge and safe haven in times of crisis. Price per troy ounce (oz).' },
+                { name: 'Silber', ticker: 'XAG/USD', apiId: 'SLV', icon: 'https://financialmodelingprep.com/image-stock/SLV.png', rawPrice: 27.50, rawCurrency: 'USD', change: '+0.8%', repScore: 30, desc_de: 'Industrie- und Edelmetall. Silber wird in Elektronik, Fotovoltaik und Medizintechnik eingesetzt. Preis pro Feinunze (oz).', desc_en: 'Industrial and precious metal. Silver is used in electronics, photovoltaics and medical technology. Price per troy ounce (oz).' },
+                { name: 'Platin', ticker: 'XPT/USD', apiId: 'PPLT', icon: 'https://financialmodelingprep.com/image-stock/PPLT.png', rawPrice: 950.00, rawCurrency: 'USD', change: '-0.3%', repScore: 27, desc_de: 'Selteneres Edelmetall mit hohem Industrieanteil. Wichtig für Katalysatoren und Wasserstofftechnologie. Preis pro Feinunze (oz).', desc_en: 'Rarer precious metal with high industrial share. Important for catalysts and hydrogen technology. Price per troy ounce (oz).' },
+                { name: 'Palladium', ticker: 'XPD/USD', apiId: 'PALL', icon: 'https://financialmodelingprep.com/image-stock/PALL.png', rawPrice: 1050.00, rawCurrency: 'USD', change: '-1.2%', repScore: 24, desc_de: 'Edelmetall mit hoher Nachfrage für Abgaskatalysatoren in Benzinmotoren. Preis pro Feinunze (oz).', desc_en: 'Precious metal with high demand for exhaust catalysts in petrol engines. Price per troy ounce (oz).' },
+                { name: 'Rohöl (WTI)', ticker: 'WTI/USD', apiId: 'USO', icon: 'https://financialmodelingprep.com/image-stock/USO.png', rawPrice: 78.50, rawCurrency: 'USD', change: '+1.1%', repScore: 32, desc_de: 'West Texas Intermediate — der globale Benchmark für Rohöl. Stark beeinflusst durch OPEC-Entscheidungen und geopolitische Lage. Preis pro Barrel.', desc_en: 'West Texas Intermediate — the global benchmark for crude oil. Strongly influenced by OPEC decisions and geopolitics. Price per barrel.' },
+                { name: 'Brent Öl', ticker: 'BRENT', apiId: 'BNO', icon: 'https://financialmodelingprep.com/image-stock/BNO.png', rawPrice: 82.30, rawCurrency: 'USD', change: '+0.9%', repScore: 31, desc_de: 'Nordsee-Rohöl als wichtigster europäischer Benchmark. Maßgeblich für die globale Ölpreisbildung. Preis pro Barrel.', desc_en: 'North Sea crude oil as the most important European benchmark. Decisive for global oil pricing. Price per barrel.' },
+                { name: 'Erdgas', ticker: 'NGAS', apiId: 'UNG', icon: 'https://financialmodelingprep.com/image-stock/UNG.png', rawPrice: 2.50, rawCurrency: 'USD', change: '-2.1%', repScore: 22, desc_de: 'Wichtiger Energieträger für Heizung, Strom und Industrie. Sehr volatil durch saisonale Nachfrage und Lagerstände. Preis pro MMBtu.', desc_en: 'Important energy source for heating, electricity and industry. Very volatile due to seasonal demand and inventory levels. Price per MMBtu.' },
+                { name: 'Kupfer', ticker: 'XCU/USD', apiId: 'CPER', icon: 'https://financialmodelingprep.com/image-stock/CPER.png', rawPrice: 4.50, rawCurrency: 'USD', change: '+0.3%', repScore: 29, desc_de: 'Das wichtigste Industriemetall. Kupfer ist essenziell für Elektromobilität, erneuerbare Energien und Bauindustrie. Preis pro Pfund (lb).', desc_en: 'The most important industrial metal. Copper is essential for e-mobility, renewable energy and construction. Price per pound (lb).' },
+                { name: 'Weizen', ticker: 'WEAT', apiId: 'WEAT', icon: 'https://financialmodelingprep.com/image-stock/WEAT.png', rawPrice: 5.50, rawCurrency: 'USD', change: '-0.4%', repScore: 20, desc_de: 'Eines der wichtigsten Grundnahrungsmittel. Der Preis reagiert stark auf Wetter, Erntemengen und geopolitische Ereignisse. Preis pro Scheffel (bushel).', desc_en: 'One of the most important staple foods. The price reacts strongly to weather, harvest volumes and geopolitical events. Price per bushel.' },
+                { name: 'Mais', ticker: 'CORN', apiId: 'CORN', icon: 'https://financialmodelingprep.com/image-stock/CORN.png', rawPrice: 4.20, rawCurrency: 'USD', change: '+0.2%', repScore: 19, desc_de: 'Weltweit wichtiges Agrarrohstoff für Nahrungsmittel, Tierfutter und Bioethanol. Preis pro Scheffel (bushel).', desc_en: 'Globally important agricultural commodity for food, animal feed and bioethanol. Price per bushel.' }
             ]
         };
 
-        // --- SUBSCRIPTION LOGIK ---
-        function openModal() { document.getElementById('pricingModal').classList.add('active'); }
-        function closeModal() { document.getElementById('pricingModal').classList.remove('active'); }
+        const FINNHUB_KEY = 'd7s9blhr01qorsvhtcegd7s9blhr01qorsvhtcf0';
+        const _candleCache = {}; // { 'AAPL_1J': { data, ts } } — 5-Minuten-Cache
 
-        function registerFree() {
-            isLoggedIn = true;
-            alert("Registrierung erfolgreich! Du bist nun als RisingStar-Mitglied angemeldet.");
-            closeModal();
-            closeAuthBanner();
-            document.getElementById('analysis-login-wall').style.display = 'none';
+        // --- REGISTRIERUNGS-LOGIK (Double-Opt-In) ---
+        function openModal() {
+            document.getElementById('regModal').classList.add('active');
+            showRegStep(1);
+        }
+        function closeModal() {
+            document.getElementById('regModal').classList.remove('active');
         }
 
-        function subscribePremium() {
+        function showRegStep(n) {
+            document.querySelectorAll('.reg-step').forEach(s => s.classList.remove('active'));
+            document.getElementById('reg-step-' + n).classList.add('active');
+        }
+
+        function submitRegistration() {
+            const nameEl = document.getElementById('reg-name');
+            const emailEl = document.getElementById('reg-email');
+            const errName = document.getElementById('err-name');
+            const errEmail = document.getElementById('err-email');
+            let valid = true;
+
+            errName.style.display = 'none';
+            errEmail.style.display = 'none';
+
+            if (!nameEl.value.trim()) {
+                errName.style.display = 'block';
+                valid = false;
+            }
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(emailEl.value.trim())) {
+                errEmail.style.display = 'block';
+                valid = false;
+            }
+            if (!valid) return;
+
+            document.getElementById('reg-email-display').textContent = emailEl.value.trim();
+
+            // Hier: API-Call an deinen E-Mail-Dienst (z.B. Brevo, Mailchimp) für die DOI-Mail
+            // Beispiel mit Brevo: POST https://api.brevo.com/v3/contacts mit DOI-Template
+            // Nach erfolgreichem API-Call wird Schritt 2 angezeigt
+            showRegStep(2);
+        }
+
+        function completeRegistration() {
             isLoggedIn = true;
             isPremiumUser = true;
-            alert("Abo erfolgreich abgeschlossen! Du hast nun Zugriff auf die RiseSoon+ Picks.");
             closeModal();
             closeAuthBanner();
             document.getElementById('analysis-login-wall').style.display = 'none';
-            if(document.getElementById('premium-view').style.display === 'flex') {
+            const navText = document.getElementById('nav-register-text');
+            if (navText) navText.textContent = 'Mein Konto';
+            if (document.getElementById('premium-view') && document.getElementById('premium-view').style.display === 'flex') {
                 renderPremiumTable();
+            }
+        }
+
+        // Wird aufgerufen wenn Nutzer auf Bestätigungslink in der E-Mail klickt (via URL-Parameter)
+        function checkConfirmationParam() {
+            const params = new URLSearchParams(window.location.search);
+            if (params.get('confirmed') === '1') {
+                openModal();
+                showRegStep(3);
             }
         }
 
@@ -1467,9 +1680,9 @@
             
             let html = `<table><tr>
                 <th>${t.name}</th>
-                <th>KI Score (Buy)</th>
+                <th>KI-Score</th>
                 <th>Aktuell</th>
-                <th>Zielpreis (12M)</th>
+                <th>Analysekurs (12M)</th>
                 <th>Volatilität</th>
                 <th>Aktion</th>
             </tr>`;
@@ -1478,7 +1691,7 @@
                 const desc = currentLang === 'de' ? item.desc_de : item.desc_en;
                 html += `<tr onclick="openInDashboard('${item.name}', ${item.rawPrice}, '${item.rawCurrency}', '${desc}', '${item.category}', '${item.apiId}', ${item.repScore}, '${item.icon}')">
                     <td><div class="item-name"><img src="${item.icon}" class="item-icon" onerror="this.src=getIconFallback('${item.name}')"><div><div style="color:#fff; font-weight:bold;">${item.name}</div><div style="font-size: 0.8rem; color: #777;">${item.ticker}</div></div></div></td>
-                    <td><span class="score-badge">${item.aiScore.toFixed(1)}% KAUFEN</span></td>
+                    <td><span class="score-badge">${item.aiScore.toFixed(1)}% KI-Score</span></td>
                     <td>${formatPriceVal(item.rawPrice, item.rawCurrency)}</td>
                     <td class="target-price" style="color:var(--accent-green);">${formatPriceVal(item.targetPrice, item.rawCurrency)}</td>
                     <td style="color:#ccc;">${item.volatility}%</td>
@@ -1649,8 +1862,8 @@
             document.getElementById('tm-vol-val').innerText = activeTopMoverVol + "% über Ø";
 
             // --- Katalysator: seeded, stabil pro Asset+Woche ---
-            const triggers_de = ["Netzwerk-Protokoll Update", "Starke Quartalszahlen", "Insider-Käufe", "Short-Squeeze", "Positive Analysten-Bewertung", "Partnerschaft angekündigt"];
-            const triggers_en = ["Network Protocol Update", "Strong Earnings", "Insider Buying", "Short Squeeze", "Positive Analyst Rating", "Partnership Announced"];
+            const triggers_de = ["Netzwerk-Protokoll Update", "Starke Quartalszahlen", "Erhöhte Insider-Aktivität", "Ungewöhnliche Volumendynamik", "Analyst aktualisiert Bewertung", "Partnerschaft angekündigt"];
+            const triggers_en = ["Network Protocol Update", "Strong Earnings Report", "Increased Insider Activity", "Unusual Volume Dynamics", "Analyst Updates Rating", "Partnership Announced"];
             const trigArr = currentLang === 'de' ? triggers_de : triggers_en;
             activeTopMoverTrig = trigArr[(seed >> 6) % trigArr.length];
             document.getElementById('tm-trig-val').innerText = activeTopMoverTrig;
@@ -1774,9 +1987,9 @@
                 const elEur = document.getElementById('fx-eur');
                 if(elEur) elEur.innerText = eurUsdRate.toFixed(4);
                 const elGbp = document.getElementById('fx-gbp');
-                if(elGbp) elGbp.innerText = gbpUsdRate.toFixed(4);
+                if(elGbp) elGbp.innerText = (eurUsdRate / gbpUsdRate).toFixed(4);
                 const elAud = document.getElementById('fx-aud');
-                if(elAud) elAud.innerText = audUsdRate.toFixed(4);
+                if(elAud) elAud.innerText = (eurUsdRate / audUsdRate).toFixed(4);
             }
         }
 
@@ -1835,6 +2048,20 @@
             if(nBroker) nBroker.innerText = t.broker;
             const nMore = document.getElementById('nav-more');
             if(nMore) nMore.innerText = t.more;
+            const nRohstoffe = document.getElementById('nav-rohstoffe');
+            if(nRohstoffe) nRohstoffe.innerText = t.commodities;
+            const nRegText = document.getElementById('nav-register-text');
+            if(nRegText) nRegText.textContent = isLoggedIn ? t.myAccount : t.loginRegister;
+            const authBtnReg = document.querySelector('.auth-btn-register');
+            if(authBtnReg) authBtnReg.textContent = t.loginRegister;
+            const openHint = document.getElementById('analysis-open-hint');
+            if(openHint) openHint.textContent = t.openNow;
+            const aiBadge = document.querySelector('.tm-ai-badge');
+            if(aiBadge) aiBadge.innerHTML = `<div class="tm-ai-badge-dot"></div>${t.aiActive}`;
+            const loginWallBtn = document.querySelector('.analysis-login-btn');
+            if(loginWallBtn) loginWallBtn.textContent = t.loginWallBtn;
+            const loginWallTxt = document.querySelector('.analysis-login-disclaimer');
+            if(loginWallTxt) loginWallTxt.innerHTML = t.loginWallText;
             
             const pLbl = document.getElementById('price-label-text');
             if(pLbl) pLbl.innerText = t.currentPrice;
@@ -1934,17 +2161,24 @@
             const loginWall = document.getElementById('analysis-login-wall');
             if(!content || !icon) return;
 
+            const hint = document.getElementById('analysis-open-hint');
+
             // Ohne Login: Login-Wall zeigen statt Inhalt
             if(!isLoggedIn) {
-                if(loginWall) loginWall.style.display = loginWall.style.display === 'none' ? 'block' : 'none';
+                const showing = loginWall && loginWall.style.display !== 'none';
+                if(loginWall) loginWall.style.display = showing ? 'none' : 'block';
+                if(hint) hint.style.display = showing ? '' : 'none';
+                icon.classList.toggle('open', !showing);
                 return;
             }
 
             isAnalysisOpen = !isAnalysisOpen;
+            if(hint) hint.style.display = 'none';
 
             if(isAnalysisOpen) {
                 content.classList.add('open');
-                icon.style.transform = 'rotate(180deg)';
+                icon.classList.add('open');
+                icon.style.transform = '';
                 animateValue("score-news", 0, valNews, 1000);
                 animateValue("score-pattern", 0, valPattern, 1000);
                 animateValue("score-rep", 0, valRep, 1000);
@@ -1952,7 +2186,8 @@
                 animateValue("score-total-sell", 100, 100 - valTotal, 1200, true);
             } else {
                 content.classList.remove('open');
-                icon.style.transform = 'rotate(0deg)';
+                icon.classList.remove('open');
+                icon.style.transform = '';
                 const sn = document.getElementById('score-news'); if(sn) sn.innerText = '0.0%';
                 const sp = document.getElementById('score-pattern'); if(sp) sp.innerText = '0.0%';
                 const sr = document.getElementById('score-rep'); if(sr) sr.innerText = '0.0%';
@@ -1962,23 +2197,9 @@
         }
 
         // --- GLOBAL AUTO REFRESH LOGIK ---
+        // 30s: nur FX-Rate + aktueller Kurs im Chart-Header (max 2 Finnhub-Requests)
         setInterval(() => {
-            fetchExchangeRate(); // Live FX Refresh
-            
-            // Background Refresh Table & Sidebar
-            if (currentCategory === 'Crypto') {
-                fetchLiveCryptoData().then(() => {
-                    if(document.getElementById('table-view').style.display === 'flex') renderTable(currentCategory);
-                    populateSidebar(currentCategory);
-                });
-            } else {
-                fetchLiveStockData(currentCategory).then(() => {
-                    if(document.getElementById('table-view').style.display === 'flex') renderTable(currentCategory);
-                    populateSidebar(currentCategory);
-                });
-            }
-
-            // Background Refresh Main Chart Current Price
+            fetchExchangeRate();
             if (currentApiId && currentCategory !== 'Crypto') {
                 fetchLiveStockPrice(currentApiId).then(price => {
                     if (price) {
@@ -1988,7 +2209,7 @@
                     }
                 });
             }
-        }, 30000); // 30 Sekunden Refresh Loop
+        }, 30000);
 
         // --- APIS über das lokale PROXY-Backend ---
         function fetchWithTimeout(url, ms = 2000) {
@@ -2033,13 +2254,13 @@
 
             const promises = items.map(async (item) => {
                 try {
-                    const response = await fetchWithTimeout(`http://localhost:3000/api/stock?symbol=${item.apiId}`);
+                    const response = await fetch(`https://finnhub.io/api/v1/quote?symbol=${item.apiId}&token=${FINNHUB_KEY}`);
                     if(response.ok) {
                         const data = await response.json();
                         if(data.c && data.c !== 0) {
                             item.rawPrice = data.c;
                             item.rawCurrency = (item.apiId === '^GDAXI' || item.apiId.includes('.DE')) ? 'EUR' : 'USD';
-                            if(data.dp) item.change = (data.dp > 0 ? '+' : '') + data.dp.toFixed(2) + '%';
+                            if(data.dp !== undefined) item.change = (data.dp > 0 ? '+' : '') + data.dp.toFixed(2) + '%';
                         }
                     }
                 } catch(e) {}
@@ -2049,7 +2270,7 @@
 
         async function fetchLiveStockPrice(apiId) {
             try {
-                const response = await fetchWithTimeout(`http://localhost:3000/api/stock?symbol=${apiId}`);
+                const response = await fetch(`https://finnhub.io/api/v1/quote?symbol=${apiId}&token=${FINNHUB_KEY}`);
                 if(response.ok) {
                     const data = await response.json();
                     if(data.c && data.c !== 0) return data.c;
@@ -2097,72 +2318,107 @@
         }
 
         async function fetchHistoricalChartData(apiId, interval, category) {
-            if(category === 'Crypto') {
-                let days = '1';
-                if (interval === '1H') days = '2';       // 2 Tage → 5-Min-Kerzen → letzten 72 = ~6h
-                else if (interval === '1T') days = '1';
-                else if (interval === '1W') days = '7';
-                else if (interval === '1M') days = '30';
-                else if (interval === '6M') days = '180';
-                else if (interval === '1J') days = '365';
-                else days = 'max';
+            // Returns { prices: number[], labels: string[] } — labels are real timestamps when API works,
+            // or null when falling back to demo data (caller then uses generateLabels).
 
+            if(category === 'Crypto') {
+                let days = interval === '1H' ? '2' : interval === '1T' ? '1' : interval === '1W' ? '7' :
+                           interval === '1M' ? '30' : interval === '6M' ? '180' : interval === '1J' ? '365' : 'max';
                 try {
                     const response = await fetch(`https://api.coingecko.com/api/v3/coins/${apiId}/market_chart?vs_currency=usd&days=${days}`);
                     const data = await response.json();
                     if(data && data.prices && data.prices.length > 0) {
-                        let prices = data.prices.map(p => p[1]);
-                        if (interval === '1H') prices = prices.slice(-72); // letzte ~6h in 5-Min-Schritten
-                        else { if (prices.length > 60) { const step = Math.floor(prices.length / 60); prices = prices.filter((_, index) => index % step === 0).slice(-60); } }
-                        return prices.length > 0 ? prices : null;
+                        let pts = data.prices; // [[timestamp_ms, price], ...]
+                        if (interval === '1H') {
+                            pts = pts.slice(-72);
+                        } else if (pts.length > 80) {
+                            const step = Math.floor(pts.length / 80);
+                            pts = pts.filter((_, i) => i % step === 0).slice(-80);
+                        }
+                        if (pts.length === 0) throw new Error('empty');
+                        return {
+                            prices: pts.map(p => p[1]),
+                            labels: pts.map(p => formatTimestampLabel(new Date(p[0]), interval))
+                        };
                     }
-                } catch (error) { console.warn('CoinGecko API Error:', error); }
-                
-                let bPrice = currentRawPrice;
-                if(!bPrice || bPrice === 0) bPrice = (Object.values(datenBank).flat().find(item => item.apiId === apiId) || {}).rawPrice || 100;
-                const pointCount = interval === '1H' ? 24 : (interval === '1W' ? 7 : 30);
-                return generateRealisticDemoData(bPrice, pointCount, interval);
-            } 
-            else if (category === 'Aktien' || category === 'Märkte') {
-                let symbol = apiId;
-                
-                if (symbol === '^GDAXI' || symbol === 'EXS1.DE') {
-                    let bPrice = currentRawPrice;
-                    if(!bPrice || bPrice === 0) bPrice = 18530.09;
-                    const pointCount = interval === '1H' ? 96 : (interval === '1T' ? 24 : 50);
-                    return generateRealisticDemoData(bPrice, pointCount, interval);
-                }
+                } catch(e) { console.warn('CoinGecko API Error:', e); }
 
-                let to = Math.floor(Date.now() / 1000);
-                let from;
-                let res = 'D';
-                let limit = 50;
+                let bPrice = currentRawPrice || (Object.values(datenBank).flat().find(it => it.apiId === apiId) || {}).rawPrice || 100;
+                const ptCount = interval === '1H' ? 24 : interval === '1W' ? 7 : 30;
+                return { prices: generateRealisticDemoData(bPrice, ptCount, interval), labels: null };
+            }
 
-                // 1H Chart: Wir zeigen die letzten 24 Stunden in 15-Minuten-Schritten
-                if(interval === '1H') { from = to - (24 * 3600); res = '15'; limit = 96; } 
-                else if(interval === '1T') { from = to - (24 * 3600 * 3); res = '15'; limit = 60; } 
-                else if(interval === '1W') { from = to - (24 * 3600 * 14); res = '60'; limit = 50; } 
-                else if(interval === '1M') { from = to - (24 * 3600 * 60); res = 'D'; limit = 30; }
-                else if(interval === '6M') { from = to - (24 * 3600 * 250); res = 'W'; limit = 26; }
-                else if(interval === '1J') { from = to - (24 * 3600 * 400); res = 'W'; limit = 52; }
-                else { from = to - (24 * 3600 * 1825); res = 'M'; limit = 60; } 
+            else if (category === 'Aktien' || category === 'ETF' || category === 'Rohstoffe') {
+                const cacheKey = `${apiId}_${interval}`;
+                const cached = _candleCache[cacheKey];
+                if (cached && (Date.now() - cached.ts) < 5 * 60 * 1000) return cached.data;
 
+                const to = Math.floor(Date.now() / 1000);
+                let from, res;
+                // Use daily resolution for reliability on Finnhub free tier
+                if(interval === '1H')      { from = to - 24*3600;    res = '15'; }
+                else if(interval === '1T') { from = to - 3*24*3600;  res = '15'; }
+                else if(interval === '1W') { from = to - 7*24*3600;  res = '60'; }
+                else if(interval === '1M') { from = to - 35*24*3600; res = 'D';  }
+                else if(interval === '6M') { from = to - 185*24*3600;res = 'D';  }
+                else if(interval === '1J') { from = to - 370*24*3600;res = 'D';  }
+                else                       { from = to - 370*24*3600;res = 'D';  } // Max = 1 Jahr täglich (free tier)
+
+                // 1. Finnhub candles
                 try {
-                    const response = await fetch(`http://localhost:3000/api/stock/candle?symbol=${symbol}&resolution=${res}&from=${from}&to=${to}`);
-                    if(response.ok) {
-                        const data = await response.json();
-                        if(data.s === "ok" && data.c && data.c.length > 0) {
-                            return data.c; // Direkte Rückgabe aller verfügbaren Daten für den Zeitraum
+                    const r = await fetch(`https://finnhub.io/api/v1/stock/candle?symbol=${apiId}&resolution=${res}&from=${from}&to=${to}&token=${FINNHUB_KEY}`);
+                    if(r.ok) {
+                        const d = await r.json();
+                        if(d.s === 'ok' && d.c && d.c.length > 0 && d.t) {
+                            const result = { prices: d.c, labels: d.t.map(ts => formatTimestampLabel(new Date(ts * 1000), interval)) };
+                            _candleCache[cacheKey] = { data: result, ts: Date.now() };
+                            return result;
                         }
                     }
-                } catch(e) { console.warn('Finnhub Proxy Error:', e); }
-                
-                let bPrice = currentRawPrice;
-                if(!bPrice || bPrice === 0) bPrice = (Object.values(datenBank).flat().find(item => item.apiId === apiId) || {}).rawPrice || 100;
-                const pointCount = interval === '1H' ? 96 : (interval === '1T' ? 24 : (interval === '1W' ? 14 : (interval === '1M' ? 30 : (interval === '6M' ? 26 : (interval === '1J' ? 52 : 60)))));
-                return generateRealisticDemoData(bPrice, pointCount, interval);
+                } catch(e) { console.warn('Finnhub Candle:', e); }
+
+                // 2. Yahoo Finance als Fallback
+                const yhInt = { '1H':'15m','1T':'15m','1W':'1h','1M':'1d','6M':'1d','1J':'1wk','Max':'1mo' };
+                const yhRange = { '1H':'1d','1T':'5d','1W':'7d','1M':'3mo','6M':'1y','1J':'2y','Max':'5y' };
+                try {
+                    const r = await fetch(`https://query1.finance.yahoo.com/v8/finance/chart/${apiId}?interval=${yhInt[interval]}&range=${yhRange[interval]}&includePrePost=false`);
+                    if(r.ok) {
+                        const d = await r.json();
+                        const res2 = d?.chart?.result?.[0];
+                        const closes = res2?.indicators?.quote?.[0]?.close;
+                        const timestamps = res2?.timestamp;
+                        if(closes && timestamps) {
+                            const pts = timestamps.map((ts, i) => [ts * 1000, closes[i]]).filter(([,c]) => c != null);
+                            if(pts.length > 0) {
+                                const result = { prices: pts.map(([,c]) => c), labels: pts.map(([ts]) => formatTimestampLabel(new Date(ts), interval)) };
+                                _candleCache[cacheKey] = { data: result, ts: Date.now() };
+                                return result;
+                            }
+                        }
+                    }
+                } catch(e) { console.warn('Yahoo Finance Candle:', e); }
+
+                // 3. Demo-Daten als letzter Ausweg
+                let bPrice = currentRawPrice || (Object.values(datenBank).flat().find(it => it.apiId === apiId) || {}).rawPrice || 100;
+                const ptCount = interval === '1H' ? 96 : interval === '1T' ? 24 : interval === '1W' ? 14 :
+                                interval === '1M' ? 30 : interval === '6M' ? 130 : interval === '1J' ? 252 : 252;
+                return { prices: generateRealisticDemoData(bPrice, ptCount, interval), labels: null };
             }
-            return null; 
+            return null;
+        }
+
+        function formatTimestampLabel(date, interval) {
+            if (interval === '1H' || interval === '1T') {
+                return date.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+            } else if (interval === '1W') {
+                return date.toLocaleDateString('de-DE', { weekday: 'short', day: '2-digit', month: '2-digit' });
+            } else if (interval === '1M') {
+                return date.toLocaleDateString('de-DE', { day: '2-digit', month: 'short' });
+            } else if (interval === '6M' || interval === '1J') {
+                return date.toLocaleDateString('de-DE', { month: 'short', year: '2-digit' });
+            } else {
+                return date.toLocaleDateString('de-DE', { month: 'short', year: 'numeric' });
+            }
         }
 
         function generateLabels(interval, points) {
@@ -2207,7 +2463,7 @@
                 patternData: [...displayData],
                 valPattern: 15,
                 tagClass: isBullishTrend ? 'long' : 'short',
-                tagText: isBullishTrend ? 'LONG' : 'SHORT'
+                tagText: isBullishTrend ? (t ? t.trendUp : 'AUFWÄRTS') : (t ? t.trendDown : 'ABWÄRTS')
             };
 
             const { highs, lows } = findLocalExtrema(displayData, 2);
@@ -2282,7 +2538,7 @@
                 offset,
                 valPattern: Math.min(patternScore + volatility * 25, 45),
                 tagClass: isBullishTrend ? 'long' : 'short',
-                tagText: isBullishTrend ? 'LONG' : 'SHORT'
+                tagText: isBullishTrend ? (t ? t.trendUp : 'AUFWÄRTS') : (t ? t.trendDown : 'ABWÄRTS')
             };
         }
 
@@ -2404,7 +2660,7 @@
             gradientMain.addColorStop(0, 'rgba(255, 255, 255, 0.15)');
             gradientMain.addColorStop(1, 'rgba(255, 255, 255, 0)');
             
-            Chart.defaults.devicePixelRatio = window.devicePixelRatio || 2; 
+            Chart.defaults.devicePixelRatio = Math.max(window.devicePixelRatio || 1, 2);
 
             myChart = new Chart(ctx, {
                 type: 'line',
@@ -2413,15 +2669,17 @@
                     responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false },
                     plugins: {
                         legend: { display: false },
-                        tooltip: { backgroundColor: 'rgba(10, 10, 10, 0.95)', titleColor: '#00ff88', bodyColor: '#fff', borderColor: '#333', borderWidth: 1, padding: 12, displayColors: false, filter: function(tooltipItem) { return tooltipItem.datasetIndex === 0; }, callbacks: { label: function(context) { return 'Kurs: ' + context.parsed.y.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}); } } }
+                        tooltip: { backgroundColor: 'rgba(10, 10, 10, 0.95)', titleColor: '#00ff88', bodyColor: '#fff', borderColor: '#333', borderWidth: 1, padding: 12, displayColors: false, filter: function(tooltipItem) { return tooltipItem.datasetIndex === 0; }, callbacks: { label: function(context) { return (t ? t.priceLabel : 'Kurs:') + ' ' + context.parsed.y.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}); } } }
                     },
                     scales: { x: { display: true, grid: { color: '#1a1a1a' }, ticks: { color: '#666', maxTicksLimit: 6 } }, y: { display: true, grid: { color: '#222' }, ticks: { color: '#888' } } }
                 },
                 plugins: [mainChartPatternPlugin]
             });
+            pulseChart();
         }
 
         function initTopMover() {
+            Chart.defaults.devicePixelRatio = Math.max(window.devicePixelRatio || 1, 2);
             let gradientMover = ctxMover.createLinearGradient(0, 0, 0, 300);
             gradientMover.addColorStop(0, 'rgba(0, 255, 136, 0.2)');
             gradientMover.addColorStop(1, 'rgba(0, 255, 136, 0)');
@@ -2549,6 +2807,155 @@
             }
         }
 
+        // --- AKTUELLE TRENDS ANALYSE (Streak-Tracking + Archiv) ---
+        function parsePctChange(str) {
+            if (!str) return null;
+            const n = parseFloat(str.replace('%', '').replace(',', '.'));
+            return isNaN(n) ? null : n;
+        }
+
+        function formatDuration(ms) {
+            const mins = Math.max(1, Math.round(ms / 60000));
+            if (mins < 60) return mins + ' Min.';
+            const h = Math.floor(mins / 60), m = mins % 60;
+            return m > 0 ? h + 'h ' + m + 'min' : h + 'h';
+        }
+
+        function fmtTime(d) { return d.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' }); }
+        function fmtDate(d) { return d.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' }); }
+
+        function loadTrendArchive() {
+            try { return JSON.parse(localStorage.getItem('risesoon_trend_archive') || '[]'); } catch(e) { return []; }
+        }
+        function saveTrendArchive() {
+            try { localStorage.setItem('risesoon_trend_archive', JSON.stringify(trendArchive.slice(0, 100))); } catch(e) {}
+        }
+
+        const trendArchive = loadTrendArchive();
+        const activeStreaks = { Aktien: null, Crypto: null, ETF: null, Rohstoffe: null };
+
+        function checkAllTrends() {
+            const categories = ['Aktien', 'Crypto', 'ETF', 'Rohstoffe'];
+            let needsRender = false;
+            const now = new Date();
+
+            for (const cat of categories) {
+                const items = datenBank[cat];
+                const changes = items.map(it => parsePctChange(it.change)).filter(v => v !== null);
+                if (changes.length < items.length || changes.length === 0) continue;
+
+                const allUp = changes.every(v => v > 0);
+                const allDown = changes.every(v => v < 0);
+                const direction = allUp ? 'up' : allDown ? 'down' : null;
+                const streak = activeStreaks[cat];
+
+                if (!direction) {
+                    if (streak) {
+                        // Serie bricht — ins Archiv abheften
+                        streak.endTime = now.getTime();
+                        streak.endTimeFmt = fmtTime(now);
+                        streak.durationMs = now.getTime() - streak.startTime;
+                        trendArchive.unshift({ ...streak });
+                        saveTrendArchive();
+                        activeStreaks[cat] = null;
+                        needsRender = true;
+                    }
+                } else if (streak && streak.direction === direction) {
+                    // Serie läuft weiter — aktuelle Werte aktualisieren
+                    streak.latestAssets = items.map(it => ({ name: it.name, ticker: it.ticker, change: it.change }));
+                    needsRender = true;
+                } else {
+                    if (streak) {
+                        // Richtungswechsel — alte Serie abheften
+                        streak.endTime = now.getTime();
+                        streak.endTimeFmt = fmtTime(now);
+                        streak.durationMs = now.getTime() - streak.startTime;
+                        trendArchive.unshift({ ...streak });
+                        saveTrendArchive();
+                    }
+                    // Neue Serie starten
+                    activeStreaks[cat] = {
+                        category: cat,
+                        direction,
+                        startTime: now.getTime(),
+                        startTimeFmt: fmtTime(now),
+                        startDateFmt: fmtDate(now),
+                        startAssets: items.map(it => ({ name: it.name, ticker: it.ticker, change: it.change })),
+                        latestAssets: items.map(it => ({ name: it.name, ticker: it.ticker, change: it.change }))
+                    };
+                    needsRender = true;
+                }
+            }
+            if (needsRender || trendArchive.length > 0) renderTrendSection();
+        }
+
+        function renderTrendSection() {
+            const section = document.getElementById('trend-section');
+            if (!section) return;
+            const activeList = Object.values(activeStreaks).filter(s => s !== null);
+            if (activeList.length === 0 && trendArchive.length === 0) { section.style.display = 'none'; return; }
+            section.style.display = 'block';
+
+            const catLabel = { Aktien: 'Aktien', Crypto: 'Cryptos', ETF: 'ETFs', Rohstoffe: 'Rohstoffe' };
+            const dirIcon = d => d === 'up' ? '▲' : '▼';
+            const dirText = (d, c) => d === 'up' ? `Alle ${catLabel[c]} im Plus` : `Alle ${catLabel[c]} im Minus`;
+
+            // Aktive Serien anzeigen (neueste zuerst)
+            const currentEl = document.getElementById('trend-current');
+            if (activeList.length === 0) {
+                currentEl.innerHTML = '';
+            } else {
+                const s = activeList[activeList.length - 1];
+                const liveDur = formatDuration(Date.now() - s.startTime);
+                const assetsHtml = s.latestAssets.map(a => `
+                    <div class="trend-asset-row">
+                        <span class="trend-asset-name">${a.name}<span class="trend-asset-ticker">${a.ticker}</span></span>
+                        <span class="trend-asset-change ${a.change && a.change.startsWith('-') ? 'trend-neg' : 'trend-pos'}">${a.change || '—'}</span>
+                    </div>`).join('');
+                currentEl.innerHTML = `
+                    <div class="trend-card trend-card-${s.direction}">
+                        <div class="trend-card-top">
+                            <span class="trend-card-live"><span class="trend-dot-${s.direction}"></span>LIVE · ${liveDur}</span>
+                            <span class="trend-card-time">seit ${s.startTimeFmt} Uhr · ${s.startDateFmt}</span>
+                        </div>
+                        <div class="trend-card-title">${dirIcon(s.direction)} ${dirText(s.direction, s.category)}</div>
+                        <div class="trend-card-subtitle">${s.latestAssets.length} ${catLabel[s.category]} zeigen eine einheitliche Bewegung</div>
+                        <div class="trend-card-assets">${assetsHtml}</div>
+                    </div>`;
+            }
+
+            // Archiv anzeigen
+            const archiveEl = document.getElementById('trend-archive');
+            if (trendArchive.length === 0) { archiveEl.innerHTML = ''; return; }
+            archiveEl.innerHTML = `<div class="trend-archive-label">Trend-Verlauf (${trendArchive.length})</div>` +
+                trendArchive.map((r, idx) => {
+                    const chips = (r.latestAssets || r.startAssets || []).map(a =>
+                        `<span class="trend-arc-chip ${a.change && a.change.startsWith('-') ? 'trend-neg' : 'trend-pos'}">${a.name} ${a.change || ''}</span>`
+                    ).join('');
+                    return `
+                    <div class="trend-archive-row trend-archive-${r.direction}">
+                        <div class="trend-arc-main" onclick="toggleArchiveDetail(${idx})">
+                            <span class="trend-arc-icon">${dirIcon(r.direction)}</span>
+                            <span class="trend-arc-text">${dirText(r.direction, r.category)}</span>
+                            <span class="trend-arc-dur trend-arc-${r.direction}-dur">${formatDuration(r.durationMs)}</span>
+                            <span class="trend-arc-time">${r.startTimeFmt}${r.endTimeFmt ? '–' + r.endTimeFmt : ''} · ${r.startDateFmt}</span>
+                            <span class="trend-arc-toggle" id="arc-tog-${idx}">▸</span>
+                        </div>
+                        <div class="trend-arc-detail" id="arc-det-${idx}">
+                            <div class="trend-arc-chips">${chips}</div>
+                        </div>
+                    </div>`;
+                }).join('');
+        }
+
+        window.toggleArchiveDetail = function(idx) {
+            const det = document.getElementById('arc-det-' + idx);
+            const tog = document.getElementById('arc-tog-' + idx);
+            if (!det) return;
+            const open = det.classList.toggle('open');
+            if (tog) tog.textContent = open ? '▾' : '▸';
+        };
+
         async function bootApp() {
             await fetchExchangeRate();
             await fetchLiveCryptoData();
@@ -2557,6 +2964,9 @@
             goHome();
             startCountdown();
             setupIntervalUpdates();
+            // Trend-Check nach initialem Datenladen
+            await Promise.all(['Aktien','ETF','Rohstoffe'].map(cat => fetchLiveStockData(cat)));
+            checkAllTrends();
         }
 
         function goHome() {
@@ -2564,7 +2974,7 @@
             hideAllViews();
             document.getElementById('dashboard-view').style.display = 'flex';
             currentApiId = null; currentCategory = 'Aktien';
-            populateSidebar('Aktien'); loadAsset('DAX', 18530.09, 'EUR', currentLang === 'de' ? translations.de.daxDesc : translations.en.daxDesc, '^GDAXI', 36, 'https://ui-avatars.com/api/?name=DAX&background=00ff88&color=000&rounded=true');
+            populateSidebar('Aktien'); loadAsset('DAX', 18530.09, 'EUR', currentLang === 'de' ? translations.de.daxDesc : translations.en.daxDesc, '^GDAXI', 36, 'https://financialmodelingprep.com/image-stock/EXS1.DE.png');
         }
 
         function hideAllViews() {
@@ -2604,13 +3014,13 @@
             // Live-Daten im Hintergrund nachladen und Tabelle leise aktualisieren
             if(category === 'Crypto') {
                 fetchLiveCryptoData().then(() => renderTable(category));
-            } else if(category === 'Aktien' || category === 'Märkte') {
+            } else if(category === 'Aktien' || category === 'ETF' || category === 'Rohstoffe') {
                 fetchLiveStockData(category).then(() => renderTable(category));
             }
         }
 
         function renderTable(category) {
-            const data = datenBank[category]; const catName = category === 'Aktien' ? t.stocks : (category === 'Märkte' ? t.markets : category); 
+            const data = datenBank[category]; const catName = category === 'Aktien' ? t.stocks : (category === 'ETF' ? t.markets : (category === 'Rohstoffe' ? t.commodities : category));
             const tTitle = document.getElementById('table-title');
             if(tTitle) tTitle.innerText = `${t.all} ${catName}`;
             let html = `<table><tr><th>${t.name}</th><th>${t.price}</th><th>${t.change}</th><th>${t.action}</th></tr>`;
@@ -2642,7 +3052,7 @@
 
         function populateSidebar(category) {
             const container = document.getElementById('top-list-container'); const data = datenBank[category];
-            const catName = category === 'Aktien' ? t.stocks : (category === 'Märkte' ? t.markets : category);
+            const catName = category === 'Aktien' ? t.stocks : (category === 'ETF' ? t.markets : (category === 'Rohstoffe' ? t.commodities : category));
             const sTitle = document.getElementById('sidebar-title');
             if(sTitle) sTitle.innerText = `${category === 'Aktien' ? t.top10 : t.top5} ${catName}`; 
             if(container) container.innerHTML = '';
@@ -2689,29 +3099,28 @@
             const patternInfoBox = document.getElementById('pattern-info');
             const apiWarning = document.getElementById('api-warning');
             let newData = null;
+            let realLabels = null;
 
-            if (currentApiId) { 
-                newData = await fetchHistoricalChartData(currentApiId, interval, currentCategory); 
+            if (currentApiId) {
+                const result = await fetchHistoricalChartData(currentApiId, interval, currentCategory);
+                if (result) { newData = result.prices; realLabels = result.labels; }
             }
-            
+
             if (!newData || newData.length === 0) {
                 console.warn(`Kein Chart-Daten für ${currentApiId}/${interval}/${currentCategory}`);
-                
                 let p = currentRawPrice;
                 if(!p || isNaN(p) || p === 0) {
                     p = (Object.values(datenBank).flat().find(item => item.apiId === currentApiId) || {}).rawPrice || 100;
                 }
                 const pCount = interval === '1H' ? 96 : 50;
                 newData = generateRealisticDemoData(p, pCount, interval);
-                if(apiWarning) apiWarning.style.display = 'block'; 
+                realLabels = null;
+                if(apiWarning) apiWarning.style.display = 'block';
             } else {
-                if(apiWarning) apiWarning.style.display = 'none'; 
-                
+                if(apiWarning) apiWarning.style.display = 'none';
                 currentRawPrice = newData[newData.length - 1];
                 const priceElement = document.getElementById('current-asset-price');
-                if (priceElement) {
-                    priceElement.innerText = formatPriceVal(currentRawPrice, currentRawCurrency);
-                }
+                if (priceElement) priceElement.innerText = formatPriceVal(currentRawPrice, currentRawCurrency);
             }
 
             const displayData = newData.map(val => {
@@ -2720,7 +3129,8 @@
                 return val;
             });
 
-            const newLabels = generateLabels(interval, displayData.length);
+            // Use real API timestamps when available, synthetic labels as fallback
+            const newLabels = realLabels || generateLabels(interval, displayData.length);
             if(myChart) myChart.data.labels = newLabels;
             
             // Trend direction from price data
@@ -2738,7 +3148,7 @@
 
             // Volatility: seeded, category-appropriate (Crypto > Aktien > Märkte)
             const volSeed = tmHash((currentApiId || 'x') + 'vol' + rsiDayKey);
-            const volBase = currentCategory === 'Crypto' ? 3.5 : currentCategory === 'Märkte' ? 1.2 : 2.2;
+            const volBase = currentCategory === 'Crypto' ? 3.5 : (currentCategory === 'ETF' ? 1.2 : (currentCategory === 'Rohstoffe' ? 2.8 : 2.2));
             const volVal = (volBase + (volSeed % 25) / 10).toFixed(1);
             const volEl = document.getElementById('score-vol');
             if(volEl) volEl.innerText = volVal + '%';
@@ -2777,19 +3187,19 @@
                         macdExp.style.display = 'block';
                         macdExp.innerHTML = currentLang === 'de'
                             ? `<div class="macd-label green">${upSVG} MACD: Bullish — Aufwärtstrend aktiv</div>
-                               Der MACD-Indikator zeigt, dass die kurzfristige Kursdynamik <strong>über dem langfristigen Durchschnitt</strong> liegt. Das Signal deutet auf anhaltenden Kaufdruck und ein intaktes Aufwärts-Momentum hin. Ideal für Long-Positionen.`
+                               Der MACD-Indikator zeigt, dass die kurzfristige Kursdynamik <strong>über dem langfristigen Durchschnitt</strong> liegt. Das Signal deutet auf ein intaktes Aufwärts-Momentum hin. <em style="color:#555;font-size:0.78rem;">Keine Handelsempfehlung — rein informativ.</em>`
                             : `<div class="macd-label green">${upSVG} MACD: Bullish — Uptrend active</div>
-                               The MACD indicator shows that short-term price momentum is <strong>above the long-term average</strong>. The signal points to sustained buying pressure and intact upward momentum. Ideal for long positions.`;
+                               The MACD indicator shows that short-term price momentum is <strong>above the long-term average</strong>, indicating intact upward momentum. <em style="color:#555;font-size:0.78rem;">For informational purposes only — not a trading recommendation.</em>`;
                     } else {
                         macdExp.className = 'macd-explanation bearish';
                         macdExp.style.display = 'block';
                         macdExp.innerHTML = currentLang === 'de'
                             ? `<div class="macd-label red">${dnSVG} MACD: Bearish — Kurzfristiger Rücksetzer</div>
                                Der MACD-Indikator zeigt einen kurzfristigen Abwärtsdruck: Die schnelle Durchschnittslinie liegt momentan <strong>unter der langsamen</strong>. Dies ist ein <em>kurzfristiges</em> Signal, das häufig innerhalb weniger Tage dreht.
-                               <div class="macd-note" style="display:flex;align-items:flex-start;gap:0">${infoSVG}<span>Langfristige Einschätzung: Kurzfristige Bearish-Phasen sind normale Korrekturen in übergeordneten Aufwärtstrends. Langfristig orientierte Anleger nutzen solche Rücksetzer oft als <strong>günstige Einstiegsgelegenheit</strong>.</span></div>`
+                               <div class="macd-note" style="display:flex;align-items:flex-start;gap:0">${infoSVG}<span>Historische Einschätzung: Kurzfristige Bearish-Phasen sind häufig vorübergehende Korrekturen in übergeordneten Aufwärtstrends. <em>Keine Handelsempfehlung — rein informative Marktbeobachtung.</em></span></div>`
                             : `<div class="macd-label red">${dnSVG} MACD: Bearish — Short-term pullback</div>
                                The MACD indicator shows short-term downward pressure: the fast moving average is currently <strong>below the slow one</strong>. This is a <em>short-term</em> signal that often reverses within a few days.
-                               <div class="macd-note" style="display:flex;align-items:flex-start;gap:0">${infoSVG}<span>Long-term view: Short-term bearish phases are normal corrections within larger uptrends. Long-term investors often use these pullbacks as a <strong>favorable entry opportunity</strong>.</span></div>`;
+                               <div class="macd-note" style="display:flex;align-items:flex-start;gap:0">${infoSVG}<span>Historical observation: Short-term bearish phases are often temporary corrections in larger uptrends. <em>Not a trading recommendation — for informational purposes only.</em></span></div>`;
                     }
                 }
             }
@@ -2857,7 +3267,7 @@
                 const ss = document.getElementById('score-total-sell'); if(ss) ss.innerText = Math.floor(100 - valTotal) + '%';
             }
 
-            if(myChart) myChart.update();
+            if(myChart) { myChart.update(); pulseChart(); }
         };
 
         function handleSearch(query) {
@@ -2897,7 +3307,27 @@
         });
 
         // --- APP START ---
-        bootApp(); 
+        bootApp();
+        checkConfirmationParam();
+
+        // 60s: alle Preise aktualisieren + Tabelle/Sidebar + Trend-Check (max ~40 Finnhub-Requests)
+        setInterval(async () => {
+            await Promise.all(['Aktien', 'ETF', 'Rohstoffe'].map(cat => fetchLiveStockData(cat)));
+            await fetchLiveCryptoData();
+            if(document.getElementById('table-view').style.display === 'flex') renderTable(currentCategory);
+            populateSidebar(currentCategory);
+            checkAllTrends();
+        }, 60000);
+
+        // Scharfe Chart-Neuberechnung bei Container-Größenänderung (Mobile Rotation etc.)
+        const chartResizeObserver = new ResizeObserver(() => {
+            if (myChart) myChart.resize();
+            if (topMoverChart) topMoverChart.resize();
+        });
+        const mainChartContainer = document.querySelector('.chart-container');
+        if (mainChartContainer) chartResizeObserver.observe(mainChartContainer);
+        const tmChartContainer = document.querySelector('.tm-chart-inner');
+        if (tmChartContainer) chartResizeObserver.observe(tmChartContainer);
     </script>
 </body>
 </html>
