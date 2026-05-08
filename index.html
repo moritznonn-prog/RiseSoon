@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -380,8 +379,9 @@
 
         /* =========================================
            MOBILE RESPONSIVENESS (MEDIA QUERIES)
-           NEU HINZUGEFÜGT - LOGIK BLEIBT UNBERÜHRT
            ========================================= */
+
+        /* Tablet */
         @media (max-width: 1024px) {
             .dashboard-top { flex-direction: column; }
             .sidebar { max-height: none; }
@@ -392,140 +392,180 @@
             .pricing-grid { flex-direction: column; }
         }
 
+        /* Mobile */
         @media (max-width: 768px) {
-            main { padding: 15px; }
-            header { flex-direction: column; gap: 15px; padding: 15px; }
-            .search-wrapper { width: 100%; }
-            .search-bar { width: 100%; }
-            
-            nav { width: 100%; overflow-x: auto; padding-bottom: 10px; justify-content: flex-start; -webkit-overflow-scrolling: touch; }
-            nav ul { width: max-content; }
-            .lang-wrapper { flex-direction: row; align-items: center; gap: 10px; margin-left: auto; }
-            
-            #fx-banner { flex-direction: column; text-align: center; gap: 15px; }
-            .fx-rates-container { flex-direction: column; gap: 10px; }
-            
-            .asset-header { flex-direction: column; align-items: flex-start; gap: 15px; }
-            .asset-title { font-size: 1.8rem; }
-            .asset-price { font-size: 2rem; }
-            .price-container { text-align: left; width: 100%; }
-            .price-row { justify-content: flex-start; }
-            
-            .chart-wrapper { min-height: 280px; padding: 10px; }
-            .intervals { flex-wrap: wrap; }
-            .chart-section { padding: 20px; }
-            
-            .thumbs-container { border-left: none; border-top: 1px solid #222; padding-left: 0; padding-top: 20px; }
-            
-            #table-container, #premium-table-container { overflow-x: auto; }
-            table { min-width: 600px; } /* Zwingt die Tabelle zum Scrollen, statt sie zu quetschen */
-            .view-container { padding: 20px 15px; }
-            
-            .site-footer > div { flex-direction: column; text-align: center; gap: 20px; }
-            .social-buttons { justify-content: center; }
-            
-            .skyline-wrapper { display: none; }
+            main { padding: 12px; }
 
-            /* --- Header --- */
-            header { padding: 10px 14px; gap: 8px; }
+            /* Header: row 1 = logo + search; row 2 = nav */
+            header {
+                flex-wrap: wrap;
+                align-items: center;
+                justify-content: flex-start;
+                padding: 10px 14px;
+                gap: 8px;
+            }
+            .logo-container { flex-shrink: 0; }
             .logo-text { font-size: 1.1rem; }
-            .nav-premium { font-size: 0.78rem; padding: 6px 12px; }
-            nav ul { gap: 2px; }
-            nav ul li { font-size: 0.85rem; padding: 8px 10px; }
-            .lang-wrapper { gap: 6px; }
+            .logo-icon svg { width: 24px; height: 24px; }
+            .search-wrapper { flex: 1; min-width: 0; }
+            .search-bar { width: 100%; }
+            nav {
+                width: 100%;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                padding-bottom: 2px;
+                gap: 6px;
+            }
+            nav ul { width: max-content; gap: 4px; flex-wrap: nowrap; }
+            nav ul li { font-size: 0.82rem; padding: 7px 10px; white-space: nowrap; flex-shrink: 0; }
+            #nav-register-text { display: none; }
+            .nav-separator { display: none; }
+            .lang-label { display: none; }
+            .lang-wrapper { flex-direction: row; align-items: center; gap: 4px; flex-shrink: 0; }
+            .lang-switch { padding: 5px 10px; font-size: 0.8rem; }
 
-            /* --- Dashboard Layout --- */
-            .dashboard-top { flex-direction: column; gap: 16px; }
-            .sidebar { max-height: 220px; overflow-y: auto; }
-            .sidebar-item { padding: 10px 14px; }
+            /* FX Banner: single compact scrollable line */
+            #fx-banner {
+                padding: 8px 12px;
+                gap: 10px;
+                overflow-x: auto;
+                flex-wrap: nowrap;
+                -webkit-overflow-scrolling: touch;
+            }
+            .fx-info { flex-shrink: 0; }
+            .fx-rates-container { gap: 16px; flex-wrap: nowrap; flex-shrink: 0; }
+
+            /* Dashboard layout */
+            .dashboard-top { flex-direction: column; gap: 14px; }
+            .sidebar { max-height: 200px; overflow-y: auto; }
+            .sidebar-item { padding: 9px 12px; }
             .chart-section { padding: 14px; }
 
-            /* --- Asset Header --- */
-            .asset-header { gap: 10px; }
-            .asset-title { font-size: 1.5rem; }
-            .asset-price { font-size: 1.8rem; }
-            .price-container { text-align: left; }
+            /* Asset header */
+            .asset-header { flex-direction: column; align-items: flex-start; gap: 10px; padding-bottom: 14px; margin-bottom: 18px; }
+            .asset-title { font-size: 1.3rem; gap: 8px; }
+            .item-icon.large { width: 28px; height: 28px; font-size: 0.9rem; padding: 3px; }
+            .price-container { text-align: left; width: 100%; }
+            .price-label { font-size: 0.75rem; margin-bottom: 3px; }
+            .price-row { gap: 10px; justify-content: flex-start; }
+            .asset-price { font-size: 1.6rem; }
+            .currency-toggle button { padding: 5px 10px; font-size: 0.75rem; }
+            .price-disclaimer { font-size: 0.65rem; }
 
-            /* --- Intervals --- */
-            .intervals { gap: 5px; justify-content: center; }
-            .intervals button { padding: 6px 10px; font-size: 0.78rem; }
+            /* Chart */
+            .chart-wrapper { min-height: 240px; padding: 12px; }
+            .intervals { flex-wrap: wrap; gap: 5px; justify-content: center; margin-top: 14px; }
+            .intervals button { padding: 5px 9px; font-size: 0.77rem; }
 
-            /* --- Pattern Box --- */
-            .pattern-info { padding: 14px 16px; }
-            #pattern-name-text { font-size: 1rem; }
+            /* Pattern */
+            .pattern-info { padding: 12px 14px; }
+            #pattern-name-text { font-size: 0.95rem; }
 
-            /* --- Kaufanalyse --- */
-            .analysis-flex { flex-direction: column; gap: 20px; }
+            /* Kaufanalyse */
+            .analysis-flex { flex-direction: column; gap: 18px; }
             .analysis-table-container { flex-direction: column; gap: 10px; }
-            .thumbs-container { flex-direction: row; border-left: none; border-top: 1px solid #222; padding-left: 0; padding-top: 18px; }
-            .thumb-box { flex: 1; padding: 12px; }
-            .thumb-percent { font-size: 1.6rem; }
-            .analysis-table td { font-size: 0.8rem; padding: 9px 0; }
-            .val-col { font-size: 0.9rem; }
+            .thumbs-container { flex-direction: row; border-left: none; border-top: 1px solid #222; padding-left: 0; padding-top: 16px; }
+            .thumb-box { flex: 1; padding: 10px; }
+            .thumb-percent { font-size: 1.5rem; }
+            .analysis-table td { font-size: 0.8rem; padding: 8px 0; }
+            .val-col { font-size: 0.88rem; }
             .macd-explanation { font-size: 0.8rem; }
 
-            /* --- Top Mover --- */
-            .top-mover-content { flex-direction: column; gap: 18px; }
-            .top-mover-chart { min-height: 250px; padding: 16px 14px 12px; }
-            .top-mover-facts { padding: 18px; }
-            .tm-stat-card { padding: 11px 14px; gap: 11px; }
-            .tm-stat-value { font-size: 0.85rem; }
-            .tm-ai-badge { font-size: 0.65rem; }
+            /* Top Mover */
+            .top-mover-content { flex-direction: column; gap: 16px; }
+            .top-mover-chart { min-height: 240px; padding: 14px 12px 10px; }
+            .top-mover-facts { padding: 16px; }
+            .tm-stat-card { padding: 10px 12px; gap: 10px; }
+            .tm-stat-value { font-size: 0.83rem; }
+            .tm-ai-badge { font-size: 0.63rem; }
 
-            /* --- FX Banner --- */
-            #fx-banner { padding: 10px 14px; gap: 8px; }
-            .fx-rates-container { gap: 10px; flex-wrap: wrap; justify-content: center; }
+            /* Table views */
+            #table-container, #premium-table-container { overflow-x: auto; }
+            table { min-width: 560px; }
+            .view-container { padding: 18px 12px; }
+            .table-header { font-size: 1.4rem; margin-bottom: 20px; padding-bottom: 14px; }
 
-            /* --- Mehr View --- */
-            .mehr-view-container { padding: 20px 14px; }
+            /* Skyline */
+            .skyline-wrapper { display: none; }
+
+            /* Mehr view */
+            .mehr-view-container { padding: 18px 12px; }
             .mehr-tabs { overflow-x: auto; -webkit-overflow-scrolling: touch; flex-wrap: nowrap; padding-bottom: 0; gap: 0; }
-            .mehr-tab { flex-shrink: 0; padding: 10px 16px; font-size: 0.82rem; white-space: nowrap; }
-            .mehr-cards-grid { grid-template-columns: 1fr; gap: 16px; }
-            .mehr-about-grid { grid-template-columns: 1fr; gap: 16px; }
-            .mehr-team-grid { grid-template-columns: 1fr; gap: 16px; }
+            .mehr-tab { flex-shrink: 0; padding: 9px 14px; font-size: 0.82rem; white-space: nowrap; }
+            .mehr-cards-grid { grid-template-columns: 1fr; gap: 14px; }
+            .mehr-about-grid { grid-template-columns: 1fr; gap: 14px; }
+            .mehr-team-grid { grid-template-columns: 1fr; gap: 14px; }
             .mehr-stats-row { flex-direction: column; gap: 1px; }
-            .mehr-stat { padding: 18px; }
-            .mehr-stat-num { font-size: 1.4rem; }
-            .mehr-about-hero { padding: 16px 0 28px; }
-            .mehr-logo-large { font-size: 1.5rem; }
-            .mehr-card { padding: 20px; }
-            .mehr-team-card { padding: 22px; }
-            .mehr-section-header { padding: 0 0 28px; }
+            .mehr-stat { padding: 16px; }
+            .mehr-stat-num { font-size: 1.3rem; }
+            .mehr-about-hero { padding: 14px 0 24px; }
+            .mehr-logo-large { font-size: 1.4rem; }
+            .mehr-card { padding: 18px; }
+            .mehr-team-card { padding: 20px; }
+            .mehr-section-header { padding: 0 0 24px; }
 
-            /* --- Pricing --- */
-            .pricing-grid { flex-direction: column; gap: 16px; }
-            .pricing-card { padding: 24px; }
+            /* Pricing */
+            .pricing-grid { flex-direction: column; gap: 14px; }
+            .pricing-card { padding: 22px; }
 
-            /* --- Footer --- */
-            .site-footer { padding: 20px 14px; }
+            /* Auth banner */
+            #auth-banner { padding: 10px 14px; gap: 10px; }
+            .auth-banner-text span { display: none; }
+            .auth-banner-text strong { font-size: 0.88rem; }
+            .auth-btn-register { padding: 8px 14px; font-size: 0.82rem; white-space: nowrap; }
+
+            /* Cookie banner */
+            #cookie-banner { flex-direction: column; padding: 14px 16px; gap: 12px; text-align: center; }
+            #cookie-banner p { font-size: 0.82rem; }
+            .cookie-actions { justify-content: center; }
+
+            /* Reg modal */
+            .reg-modal-box { padding: 30px 20px; }
+            .reg-title { font-size: 1.4rem; }
+
+            /* Trend section */
+            .trend-card { padding: 12px 14px; }
+            .trend-card-assets { gap: 4px; }
+            .trend-arc-time { display: none; }
+
+            /* Footer */
+            .site-footer { padding: 18px 12px; }
+            .site-footer > div { flex-direction: column; text-align: center; gap: 18px; }
+            .social-buttons { justify-content: center; }
         }
 
+        /* Small phones */
         @media (max-width: 480px) {
-            main { padding: 10px; }
+            main { padding: 8px; }
             header { padding: 8px 10px; }
             .logo-text { font-size: 1rem; }
-            nav ul li { font-size: 0.8rem; padding: 7px 8px; }
+            .logo-icon svg { width: 20px; height: 20px; }
+            nav ul li { font-size: 0.78rem; padding: 6px 8px; }
 
-            .asset-title { font-size: 1.2rem; }
-            .asset-price { font-size: 1.5rem; }
-            .chart-wrapper { min-height: 230px; }
+            .asset-title { font-size: 1.1rem; }
+            .asset-price { font-size: 1.35rem; }
+            .chart-wrapper { min-height: 200px; }
 
-            .thumb-percent { font-size: 1.4rem; }
-            .thumb-box { padding: 10px; }
+            .thumb-percent { font-size: 1.3rem; }
+            .thumb-box { padding: 9px; }
 
-            .top-mover-chart { min-height: 210px; }
-            .tm-stat-value { font-size: 0.8rem; }
-            .tm-stat-label { font-size: 0.65rem; }
-            .tm-stat-icon { width: 30px; height: 30px; font-size: 0.85rem; }
+            .top-mover-chart { min-height: 200px; }
+            .tm-stat-value { font-size: 0.78rem; }
+            .tm-stat-label { font-size: 0.63rem; }
+            .tm-stat-icon { width: 28px; height: 28px; font-size: 0.82rem; }
 
             .mehr-tabs { gap: 0; }
-            .mehr-tab { padding: 8px 12px; font-size: 0.78rem; }
+            .mehr-tab { padding: 8px 11px; font-size: 0.77rem; }
             .mehr-warning-banner { flex-direction: column; gap: 10px; }
-            .mehr-stat-num { font-size: 1.2rem; }
-            .mehr-join-block { padding: 20px; }
+            .mehr-stat-num { font-size: 1.1rem; }
+            .mehr-join-block { padding: 18px; }
             .mehr-tag { font-size: 0.72rem; padding: 4px 10px; }
 
             table { min-width: 480px; }
+
+            .reg-modal-box { padding: 24px 16px; }
+            .auth-banner-text strong { font-size: 0.82rem; }
+            .auth-btn-register { padding: 7px 12px; font-size: 0.78rem; }
         }
 
         /* --- COOKIE BANNER --- */
@@ -717,7 +757,6 @@
         .trend-arc-detail.open { display: block; }
         .trend-arc-chips { display: flex; flex-wrap: wrap; gap: 5px; }
         .trend-arc-chip { font-size: 0.7rem; padding: 2px 8px; border-radius: 4px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); }
-        @media (max-width: 600px) { .trend-card-assets { gap: 4px; } .trend-card { padding: 12px 14px; } .trend-arc-time { display: none; } }
 
     </style>
 </head>
