@@ -501,9 +501,149 @@
             table { min-width: 480px; }
         }
 
+        /* --- COOKIE BANNER --- */
+        #cookie-banner {
+            position: fixed; bottom: 0; left: 0; right: 0; z-index: 2000;
+            background: #111; border-top: 1px solid #333;
+            padding: 20px 40px; display: flex; align-items: center;
+            justify-content: space-between; gap: 20px;
+            box-shadow: 0 -5px 30px rgba(0,0,0,0.8);
+        }
+        #cookie-banner p { font-size: 0.88rem; color: #aaa; line-height: 1.6; max-width: 700px; margin: 0; }
+        #cookie-banner p a { color: var(--accent-green); text-decoration: none; }
+        .cookie-actions { display: flex; gap: 12px; flex-shrink: 0; }
+        .cookie-btn-accept {
+            background: var(--accent-green); color: #000; border: none;
+            padding: 10px 24px; border-radius: 8px; font-weight: 700;
+            cursor: pointer; font-size: 0.9rem; transition: 0.2s;
+        }
+        .cookie-btn-accept:hover { background: #00cc77; }
+        .cookie-btn-decline {
+            background: transparent; color: #666; border: 1px solid #444;
+            padding: 10px 24px; border-radius: 8px; font-weight: 600;
+            cursor: pointer; font-size: 0.9rem; transition: 0.2s;
+        }
+        .cookie-btn-decline:hover { color: #aaa; border-color: #666; }
+
+        /* --- ANMELDE BANNER --- */
+        #auth-banner {
+            position: fixed; bottom: 0; left: 0; right: 0; z-index: 1900;
+            background: linear-gradient(90deg, #0d0d1a 0%, #111120 100%);
+            border-top: 1px solid rgba(0,255,136,0.2);
+            padding: 16px 40px; display: none; align-items: center;
+            justify-content: space-between; gap: 20px;
+            box-shadow: 0 -5px 30px rgba(0,255,136,0.05);
+        }
+        .auth-banner-text { display: flex; flex-direction: column; gap: 3px; }
+        .auth-banner-text strong { color: #fff; font-size: 1rem; }
+        .auth-banner-text span { color: #666; font-size: 0.83rem; }
+        .auth-banner-actions { display: flex; gap: 12px; align-items: center; flex-shrink: 0; }
+        .auth-btn-register {
+            background: var(--accent-green); color: #000; border: none;
+            padding: 10px 26px; border-radius: 8px; font-weight: 700;
+            cursor: pointer; font-size: 0.9rem; transition: 0.2s;
+        }
+        .auth-btn-register:hover { background: #00cc77; }
+        .auth-btn-close {
+            background: transparent; border: none; color: #555;
+            cursor: pointer; font-size: 1.4rem; line-height: 1; padding: 4px;
+            transition: 0.2s;
+        }
+        .auth-btn-close:hover { color: #aaa; }
+
+        /* --- LEGAL MODALS (Impressum / Datenschutz) --- */
+        .legal-modal-overlay {
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,0.88); backdrop-filter: blur(6px);
+            z-index: 2100; align-items: center; justify-content: center; padding: 20px;
+        }
+        .legal-modal-overlay.active { display: flex; }
+        .legal-modal {
+            background: #111; border: 1px solid #2a2a2a; border-radius: 18px;
+            max-width: 720px; width: 100%; max-height: 85vh;
+            display: flex; flex-direction: column; position: relative;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.9);
+        }
+        .legal-modal-header {
+            padding: 28px 32px 20px; border-bottom: 1px solid #222;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .legal-modal-header h2 { font-size: 1.4rem; color: #fff; font-weight: 700; margin: 0; }
+        .legal-modal-close {
+            background: transparent; border: none; color: #555;
+            font-size: 1.6rem; cursor: pointer; transition: 0.2s; line-height: 1;
+        }
+        .legal-modal-close:hover { color: #fff; }
+        .legal-modal-body {
+            padding: 28px 32px; overflow-y: auto; flex: 1;
+            font-size: 0.9rem; color: #999; line-height: 1.85;
+        }
+        .legal-modal-body::-webkit-scrollbar { width: 6px; }
+        .legal-modal-body::-webkit-scrollbar-track { background: transparent; }
+        .legal-modal-body::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
+        .legal-modal-body h3 {
+            color: #ddd; font-size: 1rem; font-weight: 700;
+            margin: 22px 0 8px; padding-bottom: 6px; border-bottom: 1px solid #222;
+        }
+        .legal-modal-body h3:first-child { margin-top: 0; }
+        .legal-modal-body p { margin: 0 0 10px; }
+        .legal-modal-body a { color: var(--accent-green); text-decoration: none; }
+        .legal-modal-body strong { color: #ccc; }
+        .footer-legal-links {
+            display: flex; gap: 20px; justify-content: center;
+            margin-top: 12px; padding-top: 12px; border-top: 1px solid #1a1a1a;
+        }
+        .footer-legal-links a {
+            color: #555; font-size: 0.8rem; text-decoration: none;
+            transition: color 0.2s; cursor: pointer;
+        }
+        .footer-legal-links a:hover { color: #aaa; }
+
+        /* --- KAUFANALYSE LOGIN-SPERRE --- */
+        .analysis-login-wall {
+            padding: 20px; text-align: center;
+            border-top: 1px solid #222;
+        }
+        .analysis-login-disclaimer {
+            margin-top: 12px; padding: 12px 16px;
+            background: rgba(255,68,68,0.06); border: 1px solid rgba(255,68,68,0.2);
+            border-radius: 8px; font-size: 0.82rem; color: #ffaaaa; line-height: 1.6;
+        }
+        .analysis-login-btn {
+            background: var(--accent-green); color: #000; border: none;
+            padding: 10px 28px; border-radius: 8px; font-weight: 700;
+            cursor: pointer; font-size: 0.92rem; transition: 0.2s;
+        }
+        .analysis-login-btn:hover { background: #00cc77; }
+
     </style>
 </head>
 <body>
+
+    <!-- COOKIE BANNER -->
+    <div id="cookie-banner">
+        <p>
+            Wir verwenden Cookies, um dein Erlebnis zu verbessern und unsere Dienste bereitzustellen.
+            Mit dem Klick auf „Akzeptieren" stimmst du der Verwendung aller Cookies zu.
+            Weitere Informationen findest du in unserer <a href="#" onclick="openDatenschutz(); return false;">Datenschutzerklärung</a>.
+        </p>
+        <div class="cookie-actions">
+            <button class="cookie-btn-decline" onclick="declineCookies()">Ablehnen</button>
+            <button class="cookie-btn-accept" onclick="acceptCookies()">Akzeptieren</button>
+        </div>
+    </div>
+
+    <!-- ANMELDE / REGISTRIER BANNER -->
+    <div id="auth-banner">
+        <div class="auth-banner-text">
+            <strong>Jetzt kostenlos registrieren und alle Funktionen nutzen!</strong>
+            <span>Schalte Kaufanalysen und mehr frei – RisingStar ist dauerhaft kostenlos.</span>
+        </div>
+        <div class="auth-banner-actions">
+            <button class="auth-btn-register" onclick="openModal()">Anmelden / Registrieren</button>
+            <button class="auth-btn-close" onclick="closeAuthBanner()" title="Schließen">×</button>
+        </div>
+    </div>
 
     <header>
         <div class="logo-container" onclick="goHome()">
@@ -623,6 +763,13 @@
                                 Kaufanalyse (KI-gestützt)
                             </span>
                             <span class="analysis-icon" id="analysis-icon">▼</span>
+                        </div>
+                        <!-- LOGIN WALL (sichtbar wenn nicht angemeldet) -->
+                        <div class="analysis-login-wall" id="analysis-login-wall" style="display:none;">
+                            <button class="analysis-login-btn" onclick="openModal()">Jetzt anmelden &amp; Analyse freischalten</button>
+                            <div class="analysis-login-disclaimer">
+                                <strong>Anmeldung erforderlich:</strong> Um die KI-gestützte Kaufanalyse zu nutzen, musst du dich kostenlos registrieren oder anmelden. RisingStar ist dauerhaft gratis.
+                            </div>
                         </div>
                         <div class="analysis-content" id="analysis-content">
                             <div class="analysis-flex">
@@ -965,7 +1112,12 @@
                     <button class="social-btn">TikTok</button>
                 </div>
             </div>
-            <!-- NEU: Großer Disclaimer -->
+            <!-- FOOTER LEGAL LINKS -->
+            <div class="footer-legal-links">
+                <a onclick="openImpressum()">Impressum</a>
+                <a onclick="openDatenschutz()">Datenschutzerklärung</a>
+            </div>
+            <!-- Großer Disclaimer -->
             <div class="disclaimer-banner" id="global-disclaimer">
                 <strong>Wichtiger rechtlicher Hinweis & Risikowarnung:</strong> Die auf RiseSoon bereitgestellten Informationen, Kurse, Charts, Analysen und KI-Prognosen dienen ausschließlich Informationszwecken und stellen <strong>keine Anlageberatung, Handelsempfehlung oder Aufforderung zum Kauf/Verkauf von Finanzinstrumenten</strong> dar. Wir beziehen unsere Daten von Drittanbietern (z.B. Finnhub, FMP, CoinGecko). Diese Daten und Wechselkurse können <strong>verzögert, ungenau oder fehlerhaft</strong> sein. Die angezeigten Preise können erheblich von den ausführbaren Preisen bei Brokern (wie Trade Republic, Scalable Capital etc.) abweichen. Der Handel mit Aktien, ETFs und Kryptowährungen birgt ein hohes Risiko für Ihr eingesetztes Kapital bis hin zum Totalverlust. Historische Performance ist kein Indikator für zukünftige Ergebnisse. RiseSoon übernimmt <strong>keinerlei Haftung</strong> für finanzielle Verluste oder Schäden, die aus der Nutzung unserer Daten oder Analysen resultieren. Konsultieren Sie vor Anlageentscheidungen stets einen zertifizierten Finanzberater.
             </div>
@@ -988,7 +1140,7 @@
                     <div class="tier-name">RisingStar</div>
                     <div class="tier-price">0.00 € <span style="font-size:1rem; color:#888;">/ Mo.</span></div>
                     <div class="tier-sub">Für Einsteiger. Kostenlos.</div>
-                    <button class="tier-btn" onclick="alert('Mockup: Bitte füllen Sie das Registrierungsformular aus (Name, E-Mail, Adresse, Passwort, Telefonnummer) und bestätigen Sie Ihre E-Mail.')">Kostenlos Registrieren</button>
+                    <button class="tier-btn" onclick="registerFree()">Kostenlos Registrieren</button>
                     <ul class="tier-features">
                         <li><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"></polyline></svg> Basis Charts & Live-Kurse</li>
                         <li><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"></polyline></svg> Wöchentlicher Top Mover</li>
@@ -1001,7 +1153,7 @@
                 <!-- TIER 2 -->
                 <div class="pricing-card popular">
                     <div class="tier-name">RisingGiant</div>
-                    <div class="tier-price">10.90 € <span style="font-size:1rem; color:#888;">/ Mo.</span></div>
+                    <div class="tier-price">4,90 € <span style="font-size:1rem; color:#888;">/ Mo.</span></div>
                     <div class="tier-sub">Der Trumpf für Trader.</div>
                     <button class="tier-btn" onclick="subscribePremium()">Jetzt Abonnieren</button>
                     <ul class="tier-features">
@@ -1016,7 +1168,7 @@
                 <!-- TIER 3 -->
                 <div class="pricing-card">
                     <div class="tier-name">RisingTitan</div>
-                    <div class="tier-price" style="font-size: 2.2rem;">Individuell</div>
+                    <div class="tier-price">30,90 € <span style="font-size:1rem; color:#888;">/ Mo.</span></div>
                     <div class="tier-sub">Für institutionelle Kunden.</div>
                     <button class="tier-btn" onclick="alert('Das Kontaktformular für das Sales-Team wird geöffnet...')">Anfragen</button>
                     <ul class="tier-features">
@@ -1030,10 +1182,113 @@
         </div>
     </div>
 
-    <script>
-        let isPremiumUser = false; 
+    <!-- IMPRESSUM MODAL -->
+    <div class="legal-modal-overlay" id="impressumModal">
+        <div class="legal-modal">
+            <div class="legal-modal-header">
+                <h2>Impressum</h2>
+                <button class="legal-modal-close" onclick="closeImpressum()">×</button>
+            </div>
+            <div class="legal-modal-body">
+                <h3>Angaben gemäß § 5 TMG</h3>
+                <p>
+                    <strong>Moritz Nonn</strong><br>
+                    Am Mertenshof 84<br>
+                    50859 Köln<br>
+                    Deutschland
+                </p>
 
-        let myChart; 
+                <h3>Kontakt</h3>
+                <p>
+                    E-Mail: <a href="mailto:moritz.nonn@web.de">moritz.nonn@web.de</a>
+                </p>
+
+                <h3>Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV</h3>
+                <p>
+                    Moritz Nonn<br>
+                    Am Mertenshof 84<br>
+                    50859 Köln
+                </p>
+
+                <h3>Haftungsausschluss</h3>
+                <p>Die Inhalte dieser Website wurden mit größtmöglicher Sorgfalt erstellt. Für die Richtigkeit, Vollständigkeit und Aktualität der Inhalte können wir jedoch keine Gewähr übernehmen. Als Diensteanbieter sind wir gemäß § 7 Abs. 1 TMG für eigene Inhalte auf diesen Seiten nach den allgemeinen Gesetzen verantwortlich.</p>
+
+                <h3>Hinweis zu Finanzinformationen</h3>
+                <p>Die auf RiseSoon bereitgestellten Kurse, Analysen und Prognosen dienen ausschließlich Informationszwecken und stellen <strong>keine Anlageberatung</strong> dar. Wir übernehmen keinerlei Haftung für finanzielle Verluste, die aus der Nutzung entstehen.</p>
+
+                <h3>Urheberrecht</h3>
+                <p>Die durch den Seitenbetreiber erstellten Inhalte und Werke auf diesen Seiten unterliegen dem deutschen Urheberrecht. Die Vervielfältigung, Bearbeitung, Verbreitung und jede Art der Verwertung außerhalb der Grenzen des Urheberrechtes bedürfen der schriftlichen Zustimmung des jeweiligen Autors bzw. Erstellers.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- DATENSCHUTZ MODAL -->
+    <div class="legal-modal-overlay" id="datenschutzModal">
+        <div class="legal-modal">
+            <div class="legal-modal-header">
+                <h2>Datenschutzerklärung</h2>
+                <button class="legal-modal-close" onclick="closeDatenschutz()">×</button>
+            </div>
+            <div class="legal-modal-body">
+                <h3>1. Verantwortlicher</h3>
+                <p>
+                    Moritz Nonn · Am Mertenshof 84 · 50859 Köln<br>
+                    E-Mail: <a href="mailto:moritz.nonn@web.de">moritz.nonn@web.de</a>
+                </p>
+
+                <h3>2. Welche Daten wir erheben</h3>
+                <p>Beim Besuch dieser Website speichert dein Browser automatisch technische Daten (IP-Adresse, Browser-Typ, Betriebssystem, aufgerufene Seiten, Datum und Uhrzeit des Zugriffs). Diese Daten werden ausschließlich zur Sicherstellung des Betriebs und zur Fehleranalyse genutzt.</p>
+                <p>Wenn du dich registrierst, erheben wir: <strong>Name, E-Mail-Adresse, Telefonnummer, Adresse und Passwort</strong> (verschlüsselt gespeichert).</p>
+
+                <h3>3. Cookies</h3>
+                <p>Diese Website verwendet Cookies. Cookies sind kleine Textdateien, die auf deinem Gerät gespeichert werden und die Nutzung der Website verbessern. Du kannst der Verwendung von Cookies über den Cookie-Banner zustimmen oder sie ablehnen. Ohne technisch notwendige Cookies kann die Website möglicherweise nicht vollständig genutzt werden.</p>
+                <p><strong>Technisch notwendige Cookies</strong> werden ohne Einwilligung gesetzt (Sitzungs-Management, Sicherheit). <strong>Analyse-Cookies</strong> werden nur nach deiner Einwilligung gesetzt.</p>
+
+                <h3>4. Drittanbieter & API-Dienste</h3>
+                <p>Zur Darstellung von Live-Kursen nutzen wir externe APIs (z. B. Finnhub, Financial Modeling Prep, CoinGecko). Diese Drittanbieter können eigene Cookies setzen und Daten verarbeiten. Bitte beachte deren jeweilige Datenschutzbestimmungen.</p>
+
+                <h3>5. Deine Rechte (DSGVO)</h3>
+                <p>Du hast das Recht auf <strong>Auskunft, Berichtigung, Löschung, Einschränkung der Verarbeitung, Datenübertragbarkeit</strong> und <strong>Widerspruch</strong> gegen die Verarbeitung deiner personenbezogenen Daten. Zur Ausübung dieser Rechte wende dich an: <a href="mailto:moritz.nonn@web.de">moritz.nonn@web.de</a></p>
+                <p>Du hast zudem das Recht, dich bei einer Datenschutz-Aufsichtsbehörde zu beschweren.</p>
+
+                <h3>6. Speicherdauer</h3>
+                <p>Personenbezogene Daten werden nur so lange gespeichert, wie es für den jeweiligen Zweck erforderlich ist oder gesetzliche Aufbewahrungsfristen bestehen.</p>
+
+                <h3>7. Änderungen dieser Datenschutzerklärung</h3>
+                <p>Wir behalten uns vor, diese Datenschutzerklärung bei Bedarf anzupassen. Die jeweils aktuelle Fassung ist auf dieser Website einsehbar. Stand: Mai 2026.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let isPremiumUser = false;
+        let isLoggedIn = false;
+
+        // --- COOKIE BANNER LOGIK ---
+        function acceptCookies() {
+            document.getElementById('cookie-banner').style.display = 'none';
+            document.getElementById('auth-banner').style.display = 'flex';
+        }
+        function declineCookies() {
+            document.getElementById('cookie-banner').style.display = 'none';
+        }
+        function closeAuthBanner() {
+            document.getElementById('auth-banner').style.display = 'none';
+        }
+
+        // --- IMPRESSUM / DATENSCHUTZ MODALS ---
+        function openImpressum() { document.getElementById('impressumModal').classList.add('active'); }
+        function closeImpressum() { document.getElementById('impressumModal').classList.remove('active'); }
+        function openDatenschutz() { document.getElementById('datenschutzModal').classList.add('active'); }
+        function closeDatenschutz() { document.getElementById('datenschutzModal').classList.remove('active'); }
+
+        // Klick auf Overlay schließt das jeweilige Modal (registriert nach DOM-Load)
+        window.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('impressumModal').addEventListener('click', function(e) { if(e.target === this) closeImpressum(); });
+            document.getElementById('datenschutzModal').addEventListener('click', function(e) { if(e.target === this) closeDatenschutz(); });
+        });
+
+        let myChart;
         let topMoverChart; 
         const ctx = document.getElementById('mainChart').getContext('2d');
         const ctxMover = document.getElementById('topMoverChart').getContext('2d');
@@ -1157,11 +1412,22 @@
         // --- SUBSCRIPTION LOGIK ---
         function openModal() { document.getElementById('pricingModal').classList.add('active'); }
         function closeModal() { document.getElementById('pricingModal').classList.remove('active'); }
-        
+
+        function registerFree() {
+            isLoggedIn = true;
+            alert("Registrierung erfolgreich! Du bist nun als RisingStar-Mitglied angemeldet.");
+            closeModal();
+            closeAuthBanner();
+            document.getElementById('analysis-login-wall').style.display = 'none';
+        }
+
         function subscribePremium() {
+            isLoggedIn = true;
             isPremiumUser = true;
             alert("Abo erfolgreich abgeschlossen! Du hast nun Zugriff auf die RiseSoon+ Picks.");
             closeModal();
+            closeAuthBanner();
+            document.getElementById('analysis-login-wall').style.display = 'none';
             if(document.getElementById('premium-view').style.display === 'flex') {
                 renderPremiumTable();
             }
@@ -1665,10 +1931,17 @@
         function toggleAnalysis() {
             const content = document.getElementById('analysis-content');
             const icon = document.getElementById('analysis-icon');
+            const loginWall = document.getElementById('analysis-login-wall');
             if(!content || !icon) return;
 
+            // Ohne Login: Login-Wall zeigen statt Inhalt
+            if(!isLoggedIn) {
+                if(loginWall) loginWall.style.display = loginWall.style.display === 'none' ? 'block' : 'none';
+                return;
+            }
+
             isAnalysisOpen = !isAnalysisOpen;
-            
+
             if(isAnalysisOpen) {
                 content.classList.add('open');
                 icon.style.transform = 'rotate(180deg)';
