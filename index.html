@@ -1814,9 +1814,7 @@
         const FINNHUB_KEY = 'd7s9blhr01qorsvhtcegd7s9blhr01qorsvhtcf0';
         const _candleCache = {}; // { 'AAPL_1J': { data, ts } } — 5-Minuten-Cache
 
-        const BREVO_KEY = window.__BREVO_KEY__ || '';
-        const BREVO_SENDER = { name: 'RiseSoon', email: 'moritz.nonn@gmail.com' };
-        const BREVO_LIST_ID = 2;
+        const NL_SECRET = window.__NL_SECRET__ || '';
 
         // --- REGISTRIERUNGS-LOGIK (Double-Opt-In) ---
         function openModal() {
@@ -1901,23 +1899,12 @@
         // --- BREVO NEWSLETTER ---
         async function addContactToBrevo(email, name) {
             try {
-                await fetch('https://api.brevo.com/v3/contacts', {
+                await fetch('/.netlify/functions/subscribe', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'api-key': BREVO_KEY },
-                    body: JSON.stringify({ email, attributes: { FIRSTNAME: name || '' }, listIds: [BREVO_LIST_ID], updateEnabled: true })
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, name: name || '' })
                 });
             } catch(e) {}
-        }
-
-        async function getAllBrevoContacts() {
-            try {
-                const resp = await fetch(`https://api.brevo.com/v3/contacts/lists/${BREVO_LIST_ID}/contacts?limit=500`, {
-                    headers: { 'api-key': BREVO_KEY }
-                });
-                if (!resp.ok) return [];
-                const data = await resp.json();
-                return (data.contacts || []).filter(c => !c.emailBlacklisted);
-            } catch(e) { return []; }
         }
 
         function buildNewsletterHTML(recipientEmail) {
@@ -1969,7 +1956,7 @@
             }
             if (!hasStreaks) trendRows = `<tr><td style="color:#555;font-size:0.82rem;padding:6px 0;">Keine aktiven Trends aktuell.</td></tr>`;
 
-            const unsubLink = `${location.href.split('?')[0]}?unsub=${encodeURIComponent(recipientEmail)}`;
+            const unsubLink = `${location.href.split('?')[0]}?unsub=${recipientEmail}`;
 
             return `<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
 <body style="margin:0;padding:0;background:#050505;font-family:'Segoe UI',Arial,Helvetica,sans-serif;color:#fff;">
@@ -2008,28 +1995,19 @@
 
         async function sendNewsletter() {
             showNewsletterToast('Wird gesendet...');
-            const contacts = await getAllBrevoContacts();
-            if (!contacts.length) { showNewsletterToast('Keine Abonnenten gefunden.'); return; }
             const now = new Date();
             const subject = `RiseSoon ${now.getHours() < 14 ? 'Morgen' : 'Abend'}-Update · ${now.toLocaleDateString('de-DE', { day: 'numeric', month: 'long' })}`;
-            let sent = 0;
-            for (const contact of contacts) {
-                try {
-                    await fetch('https://api.brevo.com/v3/smtp/email', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json', 'api-key': BREVO_KEY },
-                        body: JSON.stringify({
-                            sender: BREVO_SENDER,
-                            to: [{ email: contact.email, name: contact.attributes?.FIRSTNAME || '' }],
-                            subject,
-                            htmlContent: buildNewsletterHTML(contact.email)
-                        })
-                    });
-                    sent++;
-                    await new Promise(r => setTimeout(r, 150));
-                } catch(e) {}
+            try {
+                const resp = await fetch('/.netlify/functions/send-newsletter', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'x-nl-secret': NL_SECRET },
+                    body: JSON.stringify({ subject, htmlTemplate: buildNewsletterHTML('__EMAIL__') })
+                });
+                const data = await resp.json();
+                showNewsletterToast(resp.ok ? `✅ Newsletter an ${data.sent} Abonnenten gesendet.` : 'Fehler beim Senden');
+            } catch(e) {
+                showNewsletterToast('Fehler beim Senden');
             }
-            showNewsletterToast(`✅ Newsletter an ${sent} Abonnenten gesendet.`);
         }
 
         function showNewsletterToast(msg) {
@@ -2044,10 +2022,10 @@
         (function() {
             const unsub = new URLSearchParams(location.search).get('unsub');
             if (unsub) {
-                fetch('https://api.brevo.com/v3/contacts/' + encodeURIComponent(unsub), {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json', 'api-key': BREVO_KEY },
-                    body: JSON.stringify({ emailBlacklisted: true })
+                fetch('/.netlify/functions/unsubscribe', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: unsub })
                 }).catch(() => {});
             }
         })();
