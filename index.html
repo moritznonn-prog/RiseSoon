@@ -1899,7 +1899,7 @@
         // --- BREVO NEWSLETTER ---
         async function addContactToBrevo(email, name) {
             try {
-                await fetch('/.netlify/functions/subscribe', {
+                await fetch('/api/subscribe', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email, name: name || '' })
@@ -1998,7 +1998,7 @@
             const now = new Date();
             const subject = `RiseSoon ${now.getHours() < 14 ? 'Morgen' : 'Abend'}-Update · ${now.toLocaleDateString('de-DE', { day: 'numeric', month: 'long' })}`;
             try {
-                const resp = await fetch('/.netlify/functions/send-newsletter', {
+                const resp = await fetch('/api/send-newsletter', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'x-nl-secret': NL_SECRET },
                     body: JSON.stringify({ subject, htmlTemplate: buildNewsletterHTML('__EMAIL__') })
@@ -2022,7 +2022,7 @@
         (function() {
             const unsub = new URLSearchParams(location.search).get('unsub');
             if (unsub) {
-                fetch('/.netlify/functions/unsubscribe', {
+                fetch('/api/unsubscribe', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email: unsub })
