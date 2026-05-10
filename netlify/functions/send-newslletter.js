@@ -1,4 +1,4 @@
-const SENDER = { name: 'RiseSoon', email: 'moritz.nonn@gmail.com' };
+const SENDER = { name: 'RiseSoon', email: 'newsletter@risesoon.de' };
 const LIST_ID = 2;
 
 exports.handler = async (event) => {
