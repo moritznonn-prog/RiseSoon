@@ -1,4 +1,4 @@
-const SENDER = { name: 'RiseSoon', email: 'moritz.nonn@gmail.com' };
+const SENDER = { name: 'RiseSoon', email: 'newsletter@risesoon.de' };
 
 exports.handler = async (event) => {
     const headers = {
@@ -13,14 +13,12 @@ exports.handler = async (event) => {
     if (!email) return { statusCode: 400, headers, body: JSON.stringify({ error: 'email required' }) };
 
     try {
-        // Kontakt zu Brevo-Liste hinzufügen
         await fetch('https://api.brevo.com/v3/contacts', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'api-key': process.env.BREVO_KEY },
             body: JSON.stringify({ email, attributes: { FIRSTNAME: name || '' }, listIds: [2], updateEnabled: true })
         });
 
-        // Willkommens-Mail senden
         const firstName = name ? name.split(' ')[0] : 'dort';
         await fetch('https://api.brevo.com/v3/smtp/email', {
             method: 'POST',
