@@ -1899,7 +1899,7 @@
         // --- BREVO NEWSLETTER ---
         async function addContactToBrevo(email, name) {
             try {
-                await fetch('/api/subscribe', {
+                await fetch('/.netlify/functions/subscribe', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email, name: name || '' })
