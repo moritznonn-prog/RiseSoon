@@ -13,14 +13,15 @@ exports.handler = async (event) => {
     if (!email) return { statusCode: 400, headers, body: JSON.stringify({ error: 'email required' }) };
 
     try {
-        await fetch('https://api.brevo.com/v3/contacts', {
+        const r1 = await fetch('https://api.brevo.com/v3/contacts', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'api-key': process.env.BREVO_KEY },
             body: JSON.stringify({ email, attributes: { FIRSTNAME: name || '' }, listIds: [2], updateEnabled: true })
         });
+        console.log('contacts status:', r1.status, await r1.text());
 
         const firstName = name ? name.split(' ')[0] : 'dort';
-        await fetch('https://api.brevo.com/v3/smtp/email', {
+        const r2 = await fetch('https://api.brevo.com/v3/smtp/email', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'api-key': process.env.BREVO_KEY },
             body: JSON.stringify({
@@ -54,6 +55,7 @@ exports.handler = async (event) => {
 </table></td></tr></table></body></html>`
             })
         });
+        console.log('smtp status:', r2.status, await r2.text());
 
         return { statusCode: 200, headers, body: JSON.stringify({ ok: true }) };
     } catch (e) {
